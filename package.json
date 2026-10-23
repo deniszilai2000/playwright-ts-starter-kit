@@ -1,0 +1,46 @@
+{
+  "name": "enterprise-playwright-e2e-template",
+  "version": "2.0.0",
+  "description": "Enterprise B2B Playwright + TypeScript E2E Automation Framework with Environment Safety Gates, Virtualized DOM Toolkit, and Gemini 4 Argon Agentic Skills.",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:dev": "ENV=dev playwright test --project=chromium",
+    "test:stage": "ENV=stage playwright test --grep @prod-safe --project=chromium",
+    "test:smoke": "playwright test --grep @smoke --project=chromium",
+    "test:sanity": "playwright test --grep @sanity --project=chromium",
+    "test:regression": "playwright test --grep @regression",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:chromium": "playwright test --project=chromium",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "test-automation",
+    "qa-architecture",
+    "e2e-testing",
+    "gemini-4-argon",
+    "antigravity"
+  ],
+  "author": "Denis Zilai (https://github.com/deniszilai2000)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deniszilai2000/playwright-ts-starter-kit.git"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@playwright/test": "^1.50.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-playwright": "^2.1.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.15.0"
+  }
+}

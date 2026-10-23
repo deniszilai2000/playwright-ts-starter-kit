@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enterprise QA Architecture — Playwright + TypeScript + Gemini 4 Argon</title>
+  <style>
+    :root[data-theme="dark"] {
+      --bg: #090d16;
+      --bg-grid: rgba(56, 189, 248, 0.04);
+      --surface: #111827;
+      --surface-elevated: #1a2333;
+      --surface-hover: #222f45;
+      --ink: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #1e293b;
+      --border-bright: #334155;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.18);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.18);
+      --green: #10b981;
+      --green-soft: rgba(16, 185, 129, 0.14);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.14);
+      --code-bg: #060911;
+      --nav-bg: rgba(9, 13, 22, 0.82);
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-grid: rgba(15, 23, 42, 0.03);
+      --surface: #ffffff;
+      --surface-elevated: #f1f5f9;
+      --surface-hover: #e2e8f0;
+      --ink: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --border-bright: #cbd5e1;
+      --accent: #0284c7;
+      --accent-glow: rgba(2, 132, 199, 0.12);
+      --purple: #7e22ce;
+      --purple-glow: rgba(126, 34, 206, 0.12);
+      --green: #059669;
+      --green-soft: rgba(5, 150, 105, 0.12);
+      --amber: #d97706;
+      --amber-soft: rgba(217, 119, 6, 0.12);
+      --red: #dc2626;
+      --red-soft: rgba(220, 38, 38, 0.12);
+      --code-bg: #0f172a;
+      --nav-bg: rgba(248, 250, 252, 0.85);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--ink);
+      line-height: 1.6;
+      padding-bottom: 90px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Sticky Top Navigation */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+    }
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.65; }
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      padding: 6px 11px;
+      border-radius: 6px;
+      transition: all 0.18s ease;
+    }
+    .nav-links a:hover {
+      color: var(--ink);
+      background: var(--surface-elevated);
+    }
+    .theme-btn {
+      background: var(--surface-elevated);
+      color: var(--ink);
+      border: 1px solid var(--border-bright);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+    .theme-btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 24px 0;
+    }
+
+    /* Hero Header */
+    .hero {
+      position: relative;
+      padding: 36px 36px 32px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
+      border: 1px solid var(--border-bright);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-glow);
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.15;
+      margin: 16px 0 12px;
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 850px;
+      margin: 0 0 26px;
+    }
+
+    /* Interactive Metric Counter Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+    }
+    .stat-card {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 16px 18px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: default;
+    }
+    :root[data-theme="light"] .stat-card {
+      background: var(--surface);
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+    .stat-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .stat-sub {
+      font-size: 12px;
+      color: var(--ink);
+      opacity: 0.8;
+      margin-top: 6px;
+    }
+
+    /* Section Containers */
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      scroll-margin-top: 76px;
+    }
+    .sec-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .sec-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sec-num {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+    }
+    .sec-hint {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* Interactive System Map */
+    .arch-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) {
+      .arch-layout { grid-template-columns: 1fr; }
+    }
+    .node-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .arch-node {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      color: var(--ink);
+      position: relative;
+    }
+    .arch-node:hover, .arch-node.active {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+    .arch-node-tag {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .arch-node h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+    .arch-node p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .inspector-panel {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .inspector-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .inspector-title {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 15px;
+    }
+
+    /* Interactive Skills Tabs */
+    .tabs-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .tab-btn {
+      background: var(--surface-elevated);
+      color: var(--muted);
+      border: 1px solid var(--border-bright);
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.18s ease;
+    }
+    .tab-btn:hover {
+      color: var(--ink);
+      border-color: var(--accent);
+    }
+    .tab-btn.active {
+      background: var(--accent-glow);
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    .skill-panel {
+      display: none;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 22px;
+      animation: fadeIn 0.22s ease;
+    }
+    .skill-panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .flow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .flow-step-num {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      color: var(--purple);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .flow-step h5 {
+      margin: 4px 0 6px;
+      font-size: 14px;
+    }
+    .flow-step p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    /* Interactive Environment Safety Simulator */
+    .sim-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 18px;
+      background: var(--surface-elevated);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-bright);
+    }
+    .sim-btn {
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--border-bright);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.18s ease;
+    }
+    .sim-btn.active-dev { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+    .sim-btn.active-stage { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
+    .sim-btn.active-prod { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+    .sim-input {
+      flex: 1;
+      min-width: 240px;
+      background: var(--code-bg);
+      color: var(--ink);
+      border: 1px solid var(--border-bright);
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+    }
+    .sim-output-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .sim-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .sim-card-label {
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .sim-card-val {
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* Interactive Repository File Explorer */
+    .repo-explorer {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .repo-explorer { grid-template-columns: 1fr; }
+    }
+    .file-tree {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+    }
+    .tree-item {
+      padding: 7px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      transition: all 0.15s ease;
+    }
+    .tree-item:hover, .tree-item.active {
+      background: var(--surface-hover);
+      color: var(--accent);
+    }
+    .tree-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--surface-elevated);
+      color: var(--muted);
+    }
+
+    /* Badges & Code Blocks */
+    .badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-green { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-red { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-blue { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    .code-wrapper {
+      position: relative;
+      margin: 12px 0 0;
+    }
+    pre {
+      background: var(--code-bg);
+      color: #e2e8f0;
+      padding: 16px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border-bright);
+      overflow-x: auto;
+      font-size: 12.8px;
+      line-height: 1.55;
+      margin: 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--surface-elevated);
+      color: var(--muted);
+      border: 1px solid var(--border-bright);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .copy-btn:hover {
+      color: var(--ink);
+      border-color: var(--accent);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+    .subcard {
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 18px 20px;
+      background: var(--surface-elevated);
+      transition: border-color 0.2s ease;
+    }
+    .subcard:hover {
+      border-color: var(--accent);
+    }
+    .subcard h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 44px;
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sticky Top Navigation -->
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="pulse-dot"></span>
+        <span>ENTERPRISE PLAYWRIGHT E2E • GEMINI 4 ARGON</span>
+      </div>
+      <div class="nav-links">
+        <a href="#system-map">01 System Map</a>
+        <a href="#skills">02 Agent Skills</a>
+        <a href="#safety-sim">03 Safety Simulator</a>
+        <a href="#repo-explorer">04 Repo Explorer</a>
+        <a href="#toolkit">05 BasePage Toolkit</a>
+        <a href="#commands">06 CLI Cheat Sheet</a>
+        <button class="theme-btn" id="themeToggle" type="button">☀️ Light Mode</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Hero Banner -->
+    <header class="hero">
+      <div class="eyebrow">⚡ ZERO RUNTIME AI FLAKINESS • 100% DETERMINISTIC TYPESCRIPT</div>
+      <h1>How the Enterprise E2E Suite is Built &amp; Connected</h1>
+      <p class="lead">
+        A production-grade Playwright + TypeScript automation architecture for multi-tenant B2B SaaS platforms.
+        Executes deterministic TypeScript in CI while pairing with <strong>Google Antigravity (Gemini 4 Argon)</strong>
+        for interactive test creation, DOM locator healing, and 1:1 Test Management traceability.
+      </p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Gemini 4 Argon Skills</div>
+          <div class="stat-sub">Interactive agent workflows</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">3-Tier</div>
+          <div class="stat-label">Safety Architecture</div>
+          <div class="stat-sub">dev (write) • stage (RO) • prod (locked)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Raw Selectors in Specs</div>
+          <div class="stat-sub">Enforced by eslint-plugin-playwright</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">LIFO</div>
+          <div class="stat-label">Self-Cleaning Data</div>
+          <div class="stat-sub">EntitySupplyManager + Golden ID guard</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">1 : 1</div>
+          <div class="stat-label">TMS Step Mapping</div>
+          <div class="stat-sub">1 Test Case Step = 1 Playwright Test</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 01: Interactive System Architecture Map -->
+    <section id="system-map">
+      <div class="sec-header">
+        <div class="sec-title-group">
+          <span class="sec-num">01</span>
+          <h2>Interactive System Map</h2>
+        </div>
+        <span class="sec-hint">👉 Click any node to inspect its implementation</span>
+      </div>
+
+      <div class="arch-layout">
+        <div class="node-grid">
+          <button class="arch-node active" type="button" data-node="runner">
+            <span class="arch-node-tag">Core Execution</span>
+            <h4>🎭 Playwright Runner</h4>
+            <p>Isolated browser contexts, pinned timezone, setup chain (auth &rarr; seed &rarr; specs).</p>
+          </button>
+          <button class="arch-node" type="button" data-node="gemini">
+            <span class="arch-node-tag">Interactive AI Partner</span>
+            <h4>🧠 Gemini 4 Argon (Antigravity)</h4>
+            <p>Reads tickets &amp; PR diffs, probes live DOM, heals locators, enforces GEMINI.md rules.</p>
+          </button>
+          <button class="arch-node" type="button" data-node="auth">
+            <span class="arch-node-tag">Session &amp; Security</span>
+            <h4>🔐 SSO / IAM + Token Interceptor</h4>
+            <p>Signs in once to user.json; borrows in-memory Bearer token for GraphQL/REST calls.</p>
+          </button>
+          <button class="arch-node" type="button" data-node="supply">
+            <span class="arch-node-tag">Resilient Test Data</span>
+            <h4>♻️ EntitySupplyManager</h4>
+            <p>Survives dev DB wipes via findOrProvision() + automatic LIFO teardown.</p>
+          </button>
+          <button class="arch-node" type="button" data-node="ci">
+            <span class="arch-node-tag">Sharded Pipeline</span>
+            <h4>🚀 GitHub Actions Shards (1/2/4/8)</h4>
+            <p>Manual workflow dispatch dropdowns for tenant, env, tags, browsers &amp; preview URLs.</p>
+          </button>
+          <button class="arch-node" type="button" data-node="tms">
+            <span class="arch-node-tag">Traceability &amp; Quality Gates</span>
+            <h4>📊 TMS Linker + ESLint Gates</h4>
+            <p>1:1 tmsCase() annotations, JUnit XML export, and zero-waitForTimeout lint lock.</p>
+          </button>
+        </div>
+
+        <div class="inspector-panel">
+          <div>
+            <div class="inspector-header">
+              <span class="inspector-title" id="inspectorTitle">🎭 Playwright Runner &amp; Setup Chain</span>
+              <span class="badge badge-blue" id="inspectorBadge">playwright.config.ts</span>
+            </div>
+            <p id="inspectorDesc" style="font-size: 13.5px; color: var(--muted); margin: 0 0 12px;">
+              Every run executes a deterministic 3-stage project dependency chain:
+              <code>auth-setup</code> signs in once with retry resilience, <code>seed-data</code> verifies baseline dev records without blocking, and browser workers run in fresh contexts.
+            </p>
+          </div>
+          <div class="code-wrapper">
+            <pre><code id="inspectorCode">// Project dependency chain in playwright.config.ts
+projects: [
+  { name: 'auth-setup', testMatch: /auth\.setup\.ts/ },
+  {
+    name: 'seed-data',
+    testMatch: /seed-data\.setup\.ts/,
+    dependencies: ['auth-setup'],
+    use: { storageState: STORAGE_STATE_PATH },
+  },
+  {
+    name: 'chromium',
+    dependencies: ['seed-data'],
+    use: { storageState: STORAGE_STATE_PATH },
+  },
+]</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02: Interactive Gemini 4 Argon Skills Explorer -->
+    <section id="skills">
+      <div class="sec-header">
+        <div class="sec-title-group">
+          <span class="sec-num">02</span>
+          <h2>Gemini 4 Argon Agentic Skills (<code>.agent/skills/</code>)</h2>
+        </div>
+        <span class="sec-hint">👉 Select a skill to explore its workflow</span>
+      </div>
+
+      <div class="tabs-bar">
+        <button class="tab-btn active" type="button" data-skill="create">/create-tests</button>
+        <button class="tab-btn" type="button" data-skill="heal">/heal-locators</button>
+        <button class="tab-btn" type="button" data-skill="project">/project-setup</button>
+        <button class="tab-btn" type="button" data-skill="local">/local-setup</button>
+      </div>
+
+      <div class="skill-panel active" id="skill-create">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <h3 style="margin:0;">End-to-End Ticket-to-Spec Workflow (<code>.agent/skills/create-tests/SKILL.md</code>)</h3>
+          <span class="badge badge-green">Most Used Daily</span>
+        </div>
+        <p style="color:var(--muted); font-size:14px; margin:8px 0 0;">
+          Turns a Jira/Linear/GitHub issue and developer PR diff into Test Management cases, a Page Object, and a verified Playwright spec.
+        </p>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <span class="flow-step-num">Step 01</span>
+            <h5>Read Ticket &amp; PR Diff</h5>
+            <p>Reads ticket description, comments, and developer PR diff to catch undocumented UI changes or feature flags.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 02</span>
+            <h5>Probe Live Dev DOM</h5>
+            <p>Inspects the live page on <code>dev</code> to discover stable <code>data-hook</code>, <code>data-test</code>, and ARIA role locators.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 03</span>
+            <h5>Propose 1:1 Steps</h5>
+            <p>Designs happy-path, negative, and edge steps for user approval before writing code (1 TMS step = 1 test).</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 04</span>
+            <h5>Write POM &amp; Verify</h5>
+            <p>Extends <code>BasePage</code>, writes the spec with <code>tmsCase()</code> &amp; <code>isDevRun()</code>, and runs <code>lint + type-check</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-panel" id="skill-heal">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <h3 style="margin:0;">Interactive DOM Locator Self-Healing (<code>.agent/skills/heal-locators/SKILL.md</code>)</h3>
+          <span class="badge badge-blue">Zero Runtime Overhead</span>
+        </div>
+        <p style="color:var(--muted); font-size:14px; margin:8px 0 0;">
+          Instead of brittle runtime AI calls that slow down CI, locator healing happens interactively in Antigravity with human confirmation.
+        </p>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <span class="flow-step-num">Step 01</span>
+            <h5>Parse Failure Trace</h5>
+            <p>Extracts the broken selector, Page Object method, and call site from <code>test-results/</code>.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 02</span>
+            <h5>Inspect Live Route</h5>
+            <p>Opens the target route and inspects the current accessibility tree and attributes.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 03</span>
+            <h5>Rank 3 Candidates</h5>
+            <p>Proposes 3 resilient replacements ordered by <code>data-hook/testid</code> &rarr; <code>role</code> &rarr; <code>label</code>.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 04</span>
+            <h5>Patch &amp; Re-Run</h5>
+            <p>Patches the Page Object in <code>src/pages/</code> after approval and re-runs the spec to confirm green.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-panel" id="skill-project">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <h3 style="margin:0;">Client Project Onboarding Wizard (<code>.agent/skills/project-setup/SKILL.md</code>)</h3>
+          <span class="badge badge-amber">One-Time Setup</span>
+        </div>
+        <p style="color:var(--muted); font-size:14px; margin:8px 0 0;">
+          Executed immediately after clicking <strong>"Use this template"</strong> on GitHub for a new client engagement.
+        </p>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <span class="flow-step-num">Step 01</span>
+            <h5>Collect Client Context</h5>
+            <p>Asks for tenant names, base URL pattern, primary test attribute, timezone, and TMS URL in one prompt.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 02</span>
+            <h5>Confirm Blueprint</h5>
+            <p>Presents a single confirmation table before touching any repository files.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 03</span>
+            <h5>Configure Repo</h5>
+            <p>Updates <code>playwright.config.ts</code>, <code>environment.helper.ts</code>, <code>.env.example</code>, and GitHub Actions.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 04</span>
+            <h5>Validate Build</h5>
+            <p>Runs <code>npm run lint &amp;&amp; npm run type-check</code> and lists all discovered Playwright projects.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-panel" id="skill-local">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <h3 style="margin:0;">Per-Engineer Machine Setup (<code>.agent/skills/local-setup/SKILL.md</code>)</h3>
+          <span class="badge badge-green">Team Onboarding</span>
+        </div>
+        <p style="color:var(--muted); font-size:14px; margin:8px 0 0;">
+          Gets any new QA engineer or developer ready to run tests locally in under 2 minutes.
+        </p>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <span class="flow-step-num">Step 01</span>
+            <h5>Check Prerequisites</h5>
+            <p>Verifies Node.js 20+, npm, git, and GitHub CLI (<code>gh auth status</code>) on the machine.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 02</span>
+            <h5>Install &amp; Browsers</h5>
+            <p>Runs <code>npm ci</code> and installs Chromium for local execution.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 03</span>
+            <h5>Scaffold .env</h5>
+            <p>Copies <code>.env.example</code> to <code>.env</code> and prompts for local test credentials.</p>
+          </div>
+          <div class="flow-step">
+            <span class="flow-step-num">Step 04</span>
+            <h5>Smoke Verification</h5>
+            <p>Executes the smoke suite and prints the daily command cheat sheet.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03: Interactive Environment Safety Gate Simulator -->
+    <section id="safety-sim">
+      <div class="sec-header">
+        <div class="sec-title-group">
+          <span class="sec-num">03</span>
+          <h2>Interactive Environment &amp; Safety Gate Simulator</h2>
+        </div>
+        <span class="sec-hint">👉 Test how resolveContext() &amp; isDevRun() protect stage and prod</span>
+      </div>
+
+      <div class="sim-controls">
+        <button class="sim-btn active-dev" type="button" data-env="dev">ENV=dev</button>
+        <button class="sim-btn" type="button" data-env="stage">ENV=stage</button>
+        <button class="sim-btn" type="button" data-env="prod">ENV=prod</button>
+        <input
+          type="text"
+          class="sim-input"
+          id="customUrlInput"
+          placeholder="Optional CUSTOM_URL override (try: https://app-acme-stage.example.com)"
+        />
+      </div>
+
+      <div class="sim-output-grid">
+        <div class="sim-card">
+          <div class="sim-card-label">Resolved Environment</div>
+          <div class="sim-card-val" id="simEnv" style="color: var(--green);">dev (WRITES ALLOWED)</div>
+        </div>
+        <div class="sim-card">
+          <div class="sim-card-label">isDevRun() Guard</div>
+          <div class="sim-card-val" id="simIsDev" style="color: var(--green);">true &rarr; Mutating Specs RUN</div>
+        </div>
+        <div class="sim-card">
+          <div class="sim-card-label">Playwright Grep Filter</div>
+          <div class="sim-card-val" id="simGrep" style="color: var(--accent);">All Tags (@smoke/@sanity/@regression)</div>
+        </div>
+        <div class="sim-card">
+          <div class="sim-card-label">seed-data.setup.ts</div>
+          <div class="sim-card-val" id="simSeed" style="color: var(--green);">ACTIVE (Seeds missing dev records)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04: Interactive Repository Explorer -->
+    <section id="repo-explorer">
+      <div class="sec-header">
+        <div class="sec-title-group">
+          <span class="sec-num">04</span>
+          <h2>Interactive Repository Layout Explorer</h2>
+        </div>
+        <span class="sec-hint">👉 Click any file in the tree to inspect its code &amp; responsibility</span>
+      </div>
+
+      <div class="repo-explorer">
+        <div class="file-tree">
+          <div class="tree-item active" data-file="config">
+            <span>📄 playwright.config.ts</span>
+            <span class="tree-badge">Core Runner</span>
+          </div>
+          <div class="tree-item" data-file="gemini">
+            <span>🤖 GEMINI.md</span>
+            <span class="tree-badge">Agent Rules</span>
+          </div>
+          <div class="tree-item" data-file="eslint">
+            <span>🛡️ eslint.config.mjs</span>
+            <span class="tree-badge">Lint Gate</span>
+          </div>
+          <div class="tree-item" data-file="basepage">
+            <span>🧰 src/pages/base.page.ts</span>
+            <span class="tree-badge">UI Toolkit</span>
+          </div>
+          <div class="tree-item" data-file="envhelper">
+            <span>🌍 src/helpers/environment.helper.ts</span>
+            <span class="tree-badge">Safety Gate</span>
+          </div>
+          <div class="tree-item" data-file="datasupply">
+            <span>♻️ src/helpers/data-supply.helper.ts</span>
+            <span class="tree-badge">Self-Cleaning</span>
+          </div>
+          <div class="tree-item" data-file="authtoken">
+            <span>🔑 src/helpers/auth-token.helper.ts</span>
+            <span class="tree-badge">Token Borrow</span>
+          </div>
+          <div class="tree-item" data-file="protected">
+            <span>🔒 src/constants/protected-data.constants.ts</span>
+            <span class="tree-badge">Golden Data</span>
+          </div>
+          <div class="tree-item" data-file="spec">
+            <span>🧪 tests/e2e/smoke/navigation.spec.ts</span>
+            <span class="tree-badge">1:1 Spec</span>
+          </div>
+        </div>
+
+        <div class="inspector-panel">
+          <div>
+            <div class="inspector-header">
+              <span class="inspector-title" id="fileTitle">playwright.config.ts</span>
+              <span class="badge badge-blue" id="fileRole">URL Resolution &amp; Project Chain</span>
+            </div>
+            <p id="fileDesc" style="font-size: 13.5px; color: var(--muted); margin: 0 0 12px;">
+              Pins the execution timezone, enforces <code>grep: /@prod-safe/</code> automatically when <code>ENV=prod</code>, and chains <code>auth-setup &rarr; seed-data &rarr; browsers</code>.
+            </p>
+          </div>
+          <div class="code-wrapper">
+            <pre><code id="fileCode">export default defineConfig({
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
+  /* Automatic production safety lock */
+  grep: context.environment === 'prod' ? /@prod-safe/ : undefined,
+  use: {
+    baseURL: context.baseURL,
+    timezoneId: context.timezoneId,
+    trace: 'retain-on-failure',
+  },
+});</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05: Enterprise BasePage & Helpers Toolkit -->
+    <section id="toolkit">
+      <div class="sec-header">
+        <div class="sec-title-group">
+          <span class="sec-num">05</span>
+          <h2>Enterprise <code>BasePage</code> &amp; Helper Toolkit</h2>
+        </div>
+        <span class="sec-hint">Built for complex enterprise SPAs</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="subcard">
+          <h3><code>readAllVirtualizedRows()</code> <span class="badge badge-blue">Virtualized DOM</span></h3>
+          <p style="font-size: 13.5px; color: var(--muted); margin: 0;">
+            Scrolls bidirectional virtualized tables from top to bottom, indexing every row by <code>data-index</code> so rows unmounted at the top are preserved in order, and verifies the total against <code>"Showing N entries"</code>.
+          </p>
+        </div>
+        <div class="subcard">
+          <h3><code>fillSecure()</code> <span class="badge badge-green">Zero Secret Leaks</span></h3>
+          <p style="font-size: 13.5px; color: var(--muted); margin: 0;">
+            Wraps password and API token inputs in <code>Fill secure field [Password] with ***REDACTED***</code> so sensitive credentials never appear in HTML or Allure step logs.
+          </p>
+        </div>
+        <div class="subcard">
+          <h3><code>InMemoryTokenClient</code> <span class="badge badge-blue">Hybrid UI + API</span></h3>
+          <p style="font-size: 13.5px; color: var(--muted); margin: 0;">
+            Intercepts the SPA's next outgoing network request to borrow its in-memory Bearer token, enabling authenticated GraphQL and REST backend assertions without storing tokens in <code>localStorage</code>.
+          </p>
+        </div>
+        <div class="subcard">
+          <h3><code>FileDownloadInspector</code> <span class="badge badge-green">Deep File Verification</span></h3>
+          <p style="font-size: 13.5px; color: var(--muted); margin: 0;">
+            Parses downloaded streams to verify actual exported content: CSV headers/rows, PDF magic bytes (<code>%PDF-</code>), and ZIP/XLSX binary headers (<code>PK\x03\x04</code>).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06: Interactive CLI Cheat Sheet -->
+    <section id="commands">
+      <div class="sec-header">
+        <div class="sec-title-group">
+          <span class="sec-num">06</span>
+          <h2>Daily Commands Cheat Sheet</h2>
+        </div>
+        <span class="sec-hint">👉 Click "Copy" on any command block</span>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div style="font-size:13px; font-weight:600; margin-bottom:4px;">Run a Single Spec on Dev</div>
+          <div class="code-wrapper">
+            <button class="copy-btn" type="button">Copy</button>
+            <pre><code>ENV=dev npx playwright test tests/e2e/smoke/navigation.spec.ts --project=chromium</code></pre>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px; font-weight:600; margin-bottom:4px;">Stage Read-Only Smoke Run (<code>@prod-safe</code>)</div>
+          <div class="code-wrapper">
+            <button class="copy-btn" type="button">Copy</button>
+            <pre><code>ENV=stage npx playwright test --grep @prod-safe --project=chromium</code></pre>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px; font-weight:600; margin-bottom:4px;">Run Against an Ephemeral PR Preview URL</div>
+          <div class="code-wrapper">
+            <button class="copy-btn" type="button">Copy</button>
+            <pre><code>CUSTOM_URL=https://preview.example.com npx playwright test --grep @smoke</code></pre>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px; font-weight:600; margin-bottom:4px;">Quality Gates (ESLint + Playwright Rules + TypeScript)</div>
+          <div class="code-wrapper">
+            <button class="copy-btn" type="button">Copy</button>
+            <pre><code>npm run lint && npm run type-check</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Enterprise Playwright + TypeScript E2E Template • Built with <strong>Google Antigravity (Gemini 4 Argon)</strong> •
+      <a href="https://github.com/deniszilai2000/playwright-ts-starter-kit" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+    </footer>
+  </div>
+
+  <script>
+    // 1. Theme Toggle (Dark Mode Default)
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      const root = document.documentElement;
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+
+    // 2. Interactive System Map Data
+    const nodeData = {
+      runner: {
+        title: '🎭 Playwright Runner & Setup Chain',
+        badge: 'playwright.config.ts',
+        desc: 'Executes a deterministic 3-stage project dependency chain: auth-setup signs in once with retry resilience, seed-data verifies baseline dev records without blocking, and browser workers run in isolated contexts.',
+        code: `// Project dependency chain in playwright.config.ts
+projects: [
+  { name: 'auth-setup', testMatch: /auth\\.setup\\.ts/ },
+  {
+    name: 'seed-data',
+    testMatch: /seed-data\\.setup\\.ts/,
+    dependencies: ['auth-setup'],
+    use: { storageState: STORAGE_STATE_PATH },
+  },
+  {
+    name: 'chromium',
+    dependencies: ['seed-data'],
+    use: { storageState: STORAGE_STATE_PATH },
+  },
+]`
+      },
+      gemini: {
+        title: '🧠 Gemini 4 Argon (Antigravity Partner)',
+        badge: 'GEMINI.md + .agent/skills/',
+        desc: 'Nothing in the runtime test calls an LLM. Gemini 4 Argon operates alongside the engineer to read tickets & PR diffs, inspect live DOM trees, create 1:1 TMS cases, and heal broken selectors.',
+        code: `// House conventions enforced by GEMINI.md & eslint.config.mjs
+test('1 — application shell loads and renders expected title @prod-safe', async ({
+  navigationPage,
+}) => {
+  await tmsCase(100001);
+  await navigationPage.navigateTo('https://example.com');
+  await navigationPage.expectPageTitleToMatch(/Example Domain/i);
+});`
+      },
+      auth: {
+        title: '🔐 SSO / IAM + In-Memory Token Interceptor',
+        badge: 'src/helpers/auth-token.helper.ts',
+        desc: 'Modern SPAs keep Bearer tokens in memory only. InMemoryTokenClient intercepts the next outgoing API/GraphQL request from the browser so tests can perform direct backend checks.',
+        code: `const tokenClient = new InMemoryTokenClient(page);
+const result = await tokenClient.queryGraphQL(
+  request,
+  '/middleware/graphql',
+  'query GetFlags { featureFlags { key enabled } }'
+);`
+      },
+      supply: {
+        title: '♻️ EntitySupplyManager (On-Demand Data & Teardown)',
+        badge: 'src/helpers/data-supply.helper.ts',
+        desc: 'Finds an existing record in the required state or provisions a fresh one on dev if the DB was refreshed. Automatically tears down created entities in LIFO order while protecting golden IDs.',
+        code: `const order = await dataSupply.findOrProvision({
+  entityType: 'Order',
+  findExistingFn: () => api.findReadyOrder(),
+  provisionNewFn: () => api.createDraftOrder(),
+  cleanupFn: (id) => api.deleteOrder(id), // Runs automatically in afterEach
+});`
+      },
+      ci: {
+        title: '🚀 Sharded GitHub Actions Pipeline',
+        badge: 'ci/github-actions-playwright.yml',
+        desc: 'Manual workflow_dispatch pipeline with dropdown inputs for tenant, environment, parallel shards (1/2/4/8), tag filters (@smoke/@sanity/@regression/@prod-safe), and preview URLs.',
+        code: `npx playwright test \\
+  --project=chromium \\
+  --grep @prod-safe \\
+  --shard=\${{ matrix.shard }}/\${{ inputs.shards }}`
+      },
+      tms: {
+        title: '📊 TMS Traceability & ESLint Quality Gates',
+        badge: 'eslint.config.mjs + tms.helper.ts',
+        desc: 'Mechanically blocks page.waitForTimeout(), test.only(), and raw locators in spec files. Links every test step 1:1 to Testmo / TestRail / Xray case IDs.',
+        code: `rules: {
+  'playwright/no-wait-for-timeout': 'error',
+  'playwright/no-focused-test': 'error',
+  'playwright/no-raw-locators': 'error',
+  'playwright/no-skipped-test': ['error', { allowConditional: true }],
+}`
+      }
+    };
+
+    document.querySelectorAll('.arch-node').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.arch-node').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const info = nodeData[btn.dataset.node];
+        document.getElementById('inspectorTitle').textContent = info.title;
+        document.getElementById('inspectorBadge').textContent = info.badge;
+        document.getElementById('inspectorDesc').textContent = info.desc;
+        document.getElementById('inspectorCode').textContent = info.code;
+      });
+    });
+
+    // 3. Skills Tabs
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.skill-panel').forEach((p) => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('skill-' + btn.dataset.skill).classList.add('active');
+      });
+    });
+
+    // 4. Environment Safety Gate Simulator
+    let selectedEnv = 'dev';
+    const customUrlInput = document.getElementById('customUrlInput');
+
+    function updateSimulator() {
+      const customUrl = customUrlInput.value.trim().toLowerCase();
+      let effectiveEnv = selectedEnv;
+
+      if (customUrl) {
+        if (customUrl.includes('prod')) effectiveEnv = 'prod';
+        else if (customUrl.includes('stage') || customUrl.includes('staging')) effectiveEnv = 'stage';
+      }
+
+      const simEnv = document.getElementById('simEnv');
+      const simIsDev = document.getElementById('simIsDev');
+      const simGrep = document.getElementById('simGrep');
+      const simSeed = document.getElementById('simSeed');
+
+      if (effectiveEnv === 'dev') {
+        simEnv.textContent = 'dev (WRITES ALLOWED)';
+        simEnv.style.color = 'var(--green)';
+        simIsDev.textContent = 'true → Mutating Specs RUN';
+        simIsDev.style.color = 'var(--green)';
+        simGrep.textContent = 'All Tags (@smoke/@sanity/@regression)';
+        simGrep.style.color = 'var(--accent)';
+        simSeed.textContent = 'ACTIVE (Seeds missing dev records)';
+        simSeed.style.color = 'var(--green)';
+      } else if (effectiveEnv === 'stage') {
+        simEnv.textContent = customUrl ? 'stage (Inferred from CUSTOM_URL!)' : 'stage (READ-ONLY)';
+        simEnv.style.color = 'var(--amber)';
+        simIsDev.textContent = 'false → Mutating Specs SKIPPED';
+        simIsDev.style.color = 'var(--amber)';
+        simGrep.textContent = '--grep @prod-safe (Read-Only Smoke)';
+        simGrep.style.color = 'var(--amber)';
+        simSeed.textContent = 'SKIPPED (Zero writes on stage)';
+        simSeed.style.color = 'var(--amber)';
+      } else {
+        simEnv.textContent = customUrl ? 'prod (Inferred from CUSTOM_URL!)' : 'prod (LOCKED)';
+        simEnv.style.color = 'var(--red)';
+        simIsDev.textContent = 'false → Mutating Specs BLOCKED';
+        simIsDev.style.color = 'var(--red)';
+        simGrep.textContent = 'Forced /@prod-safe/ in config';
+        simGrep.style.color = 'var(--red)';
+        simSeed.textContent = 'BLOCKED (Prod is never mutated)';
+        simSeed.style.color = 'var(--red)';
+      }
+    }
+
+    document.querySelectorAll('.sim-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectedEnv = btn.dataset.env;
+        document.querySelectorAll('.sim-btn').forEach((b) => {
+          b.className = 'sim-btn';
+        });
+        btn.classList.add('active-' + selectedEnv);
+        updateSimulator();
+      });
+    });
+    customUrlInput.addEventListener('input', updateSimulator);
+
+    // 5. Interactive Repository File Explorer
+    const filesData = {
+      config: {
+        title: 'playwright.config.ts',
+        role: 'URL Resolution & Project Chain',
+        desc: 'Pins execution timezone, enforces grep: /@prod-safe/ when ENV=prod, and chains auth-setup → seed-data → browsers.',
+        code: `export default defineConfig({
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
+  grep: context.environment === 'prod' ? /@prod-safe/ : undefined,
+  use: {
+    baseURL: context.baseURL,
+    timezoneId: context.timezoneId,
+    trace: 'retain-on-failure',
+  },
+});`
+      },
+      gemini: {
+        title: 'GEMINI.md',
+        role: 'Workspace Instructions for Gemini 4 Argon',
+        desc: 'Defines the 3-tier environment safety rules, locator priority hierarchy, 1 TMS step = 1 test convention, and Antigravity skill triggers.',
+        code: `# Mandatory Code Guards (GEMINI.md)
+1. Zero raw selectors in spec files (use Page Objects in src/pages/).
+2. Prefix every test with its TMS step number ("1 — ... @prod-safe").
+3. Guard mutating tests with:
+   test.skip(!isDevRun(), 'Mutating test: runs on dev environment only');
+4. Never use page.waitForTimeout() — use expect.poll() or toPass().`
+      },
+      eslint: {
+        title: 'eslint.config.mjs',
+        role: 'Automated Architecture Gate',
+        desc: 'Uses @typescript-eslint and eslint-plugin-playwright to mechanically fail CI if a spec uses raw locators, fixed sleeps, or test.only.',
+        code: `rules: {
+  'playwright/no-wait-for-timeout': 'error',
+  'playwright/no-focused-test': 'error',
+  'playwright/no-raw-locators': 'error',
+  'playwright/no-skipped-test': ['error', { allowConditional: true }],
+}`
+      },
+      basepage: {
+        title: 'src/pages/base.page.ts',
+        role: 'Enterprise UI Toolkit',
+        desc: 'Shared foundation for all Page Objects: step() reporting wrapper, fillSecure() secret masking, readAllVirtualizedRows(), clickUntil(), and pickCalendarDate().',
+        code: `async fillSecure(locator: Locator, secretValue: string, label = 'password') {
+  await this.step(\`Fill secure field [\${label}] with ***REDACTED***\`, async () => {
+    await expect(locator).toBeVisible();
+    await locator.fill(secretValue);
+  });
+}`
+      },
+      envhelper: {
+        title: 'src/helpers/environment.helper.ts',
+        role: 'Environment & URL Safety Resolver',
+        desc: 'Resolves TENANT + ENV or parses CUSTOM_URL hostnames back into environment tokens so a staging preview link can never bypass isDevRun().',
+        code: `export function isDevRun(): boolean {
+  const ctx = resolveContext();
+  if (ctx.environment !== 'dev') return false;
+  const lowerUrl = ctx.baseURL.toLowerCase();
+  return !lowerUrl.includes('stage') && !lowerUrl.includes('prod');
+}`
+      },
+      datasupply: {
+        title: 'src/helpers/data-supply.helper.ts',
+        role: 'On-Demand Data & Self-Cleaning Teardown',
+        desc: 'Finds or provisions required test entities on dev and flushes registered cleanup tasks in reverse LIFO order after each test.',
+        code: `registerForCleanup(entityId: string, type: string, fn: (id: string) => Promise<void>) {
+  assertNotProtected(entityId);
+  this.cleanupQueue.push({ entityId, entityType: type, cleanupFn: fn });
+}`
+      },
+      authtoken: {
+        title: 'src/helpers/auth-token.helper.ts',
+        role: 'In-Memory Bearer Token Interceptor',
+        desc: 'Intercepts the web app’s outgoing network requests to borrow its in-memory Authorization Bearer header for direct GraphQL/REST assertions.',
+        code: `const reqPromise = this.page.waitForRequest((req) =>
+  this.apiPattern.test(req.url()) &&
+  (req.headers()['authorization'] ?? '').toLowerCase().startsWith('bearer ')
+);`
+      },
+      protected: {
+        title: 'src/constants/protected-data.constants.ts',
+        role: 'Immutable Golden Data Registry',
+        desc: 'Lists baseline entity IDs that no test or cleanup helper is allowed to modify or delete, even on dev.',
+        code: `export const PROTECTED_ENTITY_IDS: ReadonlySet<string> = new Set([
+  'ORD-GOLDEN-0001',
+  'CNT-BASELINE-0100',
+  'INV-STAMPED-9001',
+]);`
+      },
+      spec: {
+        title: 'tests/e2e/smoke/navigation.spec.ts',
+        role: 'Clean 1:1 Spec Template',
+        desc: 'Demonstrates zero raw selectors in specs, 1 TMS step = 1 test naming, tmsCase() linking, @prod-safe tagging, and isDevRun() gating.',
+        code: `test('2 — state-mutating workflow executes only on verified dev environment', async ({
+  navigationPage,
+}) => {
+  test.skip(!isDevRun(), 'Mutating test: runs on dev environment only');
+  await tmsCase(100002);
+  await navigationPage.navigateTo('https://example.com');
+});`
+      }
+    };
+
+    document.querySelectorAll('.tree-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.tree-item').forEach((i) => i.classList.remove('active'));
+        item.classList.add('active');
+        const data = filesData[item.dataset.file];
+        document.getElementById('fileTitle').textContent = data.title;
+        document.getElementById('fileRole').textContent = data.role;
+        document.getElementById('fileDesc').textContent = data.desc;
+        document.getElementById('fileCode').textContent = data.code;
+      });
+    });
+
+    // 6. One-Click Copy Buttons
+    document.querySelectorAll('.copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const code = btn.parentElement.querySelector('code').innerText;
+        await navigator.clipboard.writeText(code);
+        const prev = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        btn.style.color = 'var(--green)';
+        setTimeout(() => {
+          btn.textContent = prev;
+          btn.style.color = '';
+        }, 1600);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+name: Enterprise Playwright E2E Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Nightly full regression at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      tenant:
+        description: 'Target Tenant Identifier'
+        required: true
+        default: 'client'
+        type: choice
+        options:
+          - client
+          - acme
+          - globex
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - stage
+          - prod
+      shards:
+        description: 'Parallel Shards'
+        required: true
+        default: '2'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '4'
+          - '8'
+      test_tags:
+        description: 'Test Tag Filter'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - '@smoke'
+          - '@sanity'
+          - '@regression'
+          - '@prod-safe'
+      browsers:
+        description: 'Browser Matrix'
+        required: true
+        default: 'chromium'
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all-desktop
+      ai_enabled:
+        description: 'Enable AI Failure Diagnostics'
+        required: true
+        default: true
+        type: boolean
+      submit_to_tms:
+        description: 'Submit JUnit Results to Test Management System'
+        required: true
+        default: false
+        type: boolean
+      custom_url:
+        description: 'Optional Custom/Preview URL Override'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  resolve-context:
+    name: Resolve Execution Context
+    runs-on: ubuntu-latest
+    outputs:
+      shard_matrix: ${{ steps.set-matrix.outputs.shard_matrix }}
+      total_shards: ${{ steps.set-matrix.outputs.total_shards }}
+      grep_arg: ${{ steps.set-matrix.outputs.grep_arg }}
+      browser_arg: ${{ steps.set-matrix.outputs.browser_arg }}
+    steps:
+      - name: Compute Trigger-Aware Shard Matrix & CLI Flags
+        id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            TOTAL="4"
+            TAGS="@regression"
+          elif [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "pull_request" ]; then
+            TOTAL="2"
+            TAGS="@smoke"
+          else
+            TOTAL="${{ inputs.shards || '2' }}"
+            TAGS="${{ inputs.test_tags || 'all' }}"
+          fi
+
+          SHARDS=$(jq -nc --argjson n "$TOTAL" '[range(1; $n + 1)]')
+          echo "shard_matrix=$SHARDS" >> "$GITHUB_OUTPUT"
+          echo "total_shards=$TOTAL" >> "$GITHUB_OUTPUT"
+
+          if [ "$TAGS" != "all" ] && [ -n "$TAGS" ]; then
+            echo "grep_arg=--grep $TAGS" >> "$GITHUB_OUTPUT"
+          else
+            echo "grep_arg=" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ "${{ inputs.browsers }}" = "all-desktop" ]; then
+            echo "browser_arg=--project=chromium --project=firefox --project=webkit" >> "$GITHUB_OUTPUT"
+          else
+            echo "browser_arg=--project=${{ inputs.browsers || 'chromium' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  playwright-tests:
+    name: Playwright E2E (Shard ${{ matrix.shard }}/${{ needs.resolve-context.outputs.total_shards }})
+    needs: resolve-context
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.50.0-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.resolve-context.outputs.shard_matrix) }}
+    env:
+      TENANT: ${{ inputs.tenant || 'client' }}
+      ENV: ${{ inputs.environment || 'dev' }}
+      CUSTOM_URL: ${{ inputs.custom_url || '' }}
+      AI_ENABLED: ${{ inputs.ai_enabled || 'true' }}
+      CREDENTIAL_PROVIDER: ${{ vars.CREDENTIAL_PROVIDER || 'env' }}
+      TEST_USERNAME: ${{ secrets.TEST_USERNAME || '' }}
+      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint & Type-Check Quality Gates
+        run: npm run lint && npm run type-check
+
+      - name: Run Playwright Tests
+        run: >
+          npx playwright test
+          ${{ needs.resolve-context.outputs.browser_arg }}
+          ${{ needs.resolve-context.outputs.grep_arg }}
+          --shard=${{ matrix.shard }}/${{ needs.resolve-context.outputs.total_shards }}
+
+      - name: Upload Shard Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-shard-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

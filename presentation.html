@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Driven Playwright Automation Boilerplate — 12-Slide Deck</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #131b2e;
+      --card-border: #1e293b;
+      --ink: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #60a5fa;
+      --accent-soft: rgba(96, 165, 250, 0.14);
+      --green: #34d399;
+      --amber: #fbbf24;
+      --code-bg: #070a12;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #111827 0%, #070a12 100%);
+      color: var(--ink);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .slide {
+      display: none;
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 64px;
+      animation: fadeSlide 0.25s ease;
+    }
+    .slide.active { display: block; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .eyebrow {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: 54px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+    h2 {
+      font-size: 36px;
+      font-weight: 800;
+      border-left: 4px solid var(--accent);
+      padding-left: 16px;
+      margin-bottom: 28px;
+    }
+    .lead {
+      font-size: 20px;
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.5;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: start; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
+    }
+    .card h3 {
+      font-size: 17px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .bullet-list { list-style: none; }
+    .bullet-list li {
+      font-size: 17px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .bullet-list li::before {
+      content: "→";
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .step-list { list-style: none; }
+    .step-list li {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      overflow-x: auto;
+    }
+    .flow-pills {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .pill {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pill.highlight {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--card-border); }
+    th { color: var(--muted); font-family: monospace; font-size: 11px; text-transform: uppercase; }
+
+    /* Bottom Deck Controls */
+    .deck-footer {
+      position: fixed;
+      bottom: 24px;
+      left: 64px;
+      right: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .progress-bar {
+      height: 3px;
+      background: var(--card-border);
+      width: 240px;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .slide-counter {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Slide 1 -->
+  <div class="slide active">
+    <div class="eyebrow">ENTERPRISE QA PLATFORM • GEMINI 4 ARGON</div>
+    <h1>AI-Driven Playwright<br />Automation Boilerplate</h1>
+    <p class="lead">A shared, zero-flakiness foundation for multi-stream engineering teams — consistent, scalable, and powered by Google Antigravity (Gemini 4 Argon).</p>
+    <p style="margin-top: 36px; font-size: 13px; color: var(--muted); font-family: monospace;">Use ← / → arrow keys or click the buttons in the bottom-right to navigate</p>
+  </div>
+
+  <!-- Slide 2 -->
+  <div class="slide">
+    <h2>The Challenge</h2>
+    <div class="grid-2">
+      <ul class="bullet-list">
+        <li>Multiple product streams need reliable end-to-end test automation</li>
+        <li>Each team starts from scratch — inconsistent patterns &amp; duplicated setup effort</li>
+        <li>Selectors break silently during UI refactors; failures are slow to diagnose</li>
+        <li>Test cases live in Test Management (Testmo/TestRail) disconnected from code</li>
+        <li>No shared CI/CD or environment safety standard across dev, stage, and prod</li>
+      </ul>
+      <div class="card">
+        <h3>What We Built</h3>
+        <p>One enterprise boilerplate that teams fork or clone. Every stream inherits the same Page Object toolkit, 3-tier safety locks, reporting, and Gemini 4 Argon skills out of the box — while staying free to add their own pages and specs.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3 -->
+  <div class="slide">
+    <h2>Tech Stack</h2>
+    <div class="grid-3">
+      <div class="card">
+        <h3>🎭 Playwright + TypeScript</h3>
+        <p>Multi-browser, parallel, strictly typed. Page Object Model with a shared <code>BasePage</code> that wraps every action as a report step.</p>
+      </div>
+      <div class="card">
+        <h3>📊 HTML / Allure + TMS</h3>
+        <p>Rich reports with screenshots, video, and traces on failure. Test cases link 1:1 via <code>tmsCase(id)</code> and sync automatically in CI.</p>
+      </div>
+      <div class="card">
+        <h3>🧠 Gemini 4 Argon</h3>
+        <p>Interactive test generation, failure root-cause analysis, two-layer locator healing, and visual diff explanation without runtime CI flakiness.</p>
+      </div>
+      <div class="card">
+        <h3>🚀 Sharded GitHub Actions</h3>
+        <p>Configurable parallel shards (1–8). Smoke tests on PRs, scheduled regressions, and manual workflow dispatch overrides.</p>
+      </div>
+      <div class="card">
+        <h3>🔐 Vault-Ready Credentials</h3>
+        <p>Reads from <code>.env</code> locally and GitHub Secrets in CI. Swap to HashiCorp Vault by changing <code>CREDENTIAL_PROVIDER=vault</code>.</p>
+      </div>
+      <div class="card">
+        <h3>🛠️ Antigravity Skills</h3>
+        <p>Four slash workflows: <code>/project-setup</code>, <code>/local-setup</code>, <code>/create-tests</code>, and <code>/heal-locators</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4 -->
+  <div class="slide">
+    <h2>Project Structure</h2>
+    <div class="grid-2">
+      <pre><code>src/
+  pages/
+    base.page.ts          ← shared enterprise toolkit
+    auth.page.ts          ← SSO/IAM login shell
+    navigation.page.ts    ← global app shell
+  fixtures/
+    base.fixture.ts       ← dependency-injected pages
+  helpers/
+    environment.helper.ts ← resolveContext() &amp; isDevRun()
+    credential-provider.helper.ts ← .env / Vault abstraction
+    tms.helper.ts         ← tmsCase() step linker
+    tms-api.helper.ts     ← TMS REST client
+    smart-locator.helper.ts ← two-layer locator diagnostics
+tests/
+  setup/                  ← auth.setup.ts &amp; seed-data.setup.ts
+  e2e/                    ← domain specs (1 TMS step = 1 test)
+.agent/skills/            ← 4 Gemini 4 Argon skills</code></pre>
+      <div>
+        <div class="card">
+          <h3>Teams Add</h3>
+          <p>Their own Page Objects in <code>src/pages/</code>, register them in <code>src/fixtures/base.fixture.ts</code>, and write specs in <code>tests/e2e/</code>. Everything else is inherited.</p>
+        </div>
+        <div class="card">
+          <h3>Teams Don't Touch</h3>
+          <p><code>BasePage</code>, environment safety gates, CI pipeline, <code>CredentialProvider</code>, TMS client, and <code>eslint.config.mjs</code>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5 -->
+  <div class="slide">
+    <h2>What a Test Looks Like</h2>
+    <div class="grid-2">
+      <pre><code>import { test } from '../../src/fixtures/base.fixture';
+import { isDevRun } from '../../src/helpers/environment.helper';
+import { tmsCase } from '../../src/helpers/tms.helper';
+
+test.describe('Order Management (@smoke @regression)', () => {
+  test('1 — active orders sort chronologically by default @prod-safe', async ({
+    navigationPage,
+  }) => {
+    await tmsCase(100001);
+
+    await navigationPage.navigateTo('/');
+    await navigationPage.expectPageTitleToMatch(/Dashboard/i);
+  });
+});</code></pre>
+      <div>
+        <div class="card">
+          <h3>Zero Raw Selectors in Specs</h3>
+          <p>Enforced mechanically by <code>playwright/no-raw-locators: 'error'</code> in ESLint.</p>
+        </div>
+        <div class="card">
+          <h3><code>tmsCase(100001)</code></h3>
+          <p>Links the test to case #100001 as a clickable annotation in HTML/Allure reports and JUnit XML.</p>
+        </div>
+        <div class="card">
+          <h3>Run by Tag</h3>
+          <p><code>npx playwright test --grep @smoke</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6 -->
+  <div class="slide">
+    <h2>/create-tests</h2>
+    <p style="color:var(--muted); margin-bottom:22px;">From ticket &amp; PR diff to committed spec file — guided by Gemini 4 Argon</p>
+    <ul class="step-list">
+      <li><span class="step-circle">1</span><div><strong>Reads the ticket &amp; dev PR diff</strong><br /><span style="color:var(--muted); font-size:14px;">Extracts title, description, comments, and developer code changes to catch undocumented UI updates.</span></div></li>
+      <li><span class="step-circle">2</span><div><strong>Explores the live app via Playwright MCP</strong><br /><span style="color:var(--muted); font-size:14px;">Opens the route in Chromium, inspects the accessibility tree, and identifies stable <code>data-hook</code> / <code>data-test</code> attributes.</span></div></li>
+      <li><span class="step-circle">3</span><div><strong>Proposes test steps for confirmation</strong><br /><span style="color:var(--muted); font-size:14px;">Happy path • negative • edge cases • accessibility (1 TMS step = 1 Playwright test).</span></div></li>
+      <li><span class="step-circle">4</span><div><strong>Resolves TMS folder &amp; creates cases</strong><br /><span style="color:var(--muted); font-size:14px;">Uses <code>TMS_FOLDER_ID</code> and <code>TmsApiClient</code> to register cases with <code>automated</code> + <code>ai-generated</code> tags.</span></div></li>
+      <li><span class="step-circle">5</span><div><strong>Writes Page Object &amp; Spec</strong><br /><span style="color:var(--muted); font-size:14px;">Generates strictly typed code, runs <code>npm run lint &amp;&amp; npm run type-check</code>, and verifies the test passes on <code>dev</code>.</span></div></li>
+    </ul>
+  </div>
+
+  <!-- Slide 7 -->
+  <div class="slide">
+    <h2>/heal-locators</h2>
+    <p style="color:var(--muted); margin-bottom:22px;">Two-layer interactive selector repair via Playwright MCP</p>
+    <div class="grid-2">
+      <ul class="step-list">
+        <li><span class="step-circle">1</span><div><strong>Auto-detects broken selector</strong><br /><span style="color:var(--muted); font-size:14px;">Reads <code>test-results/</code> to locate the failing Page Object method, line number, and target URL.</span></div></li>
+        <li><span class="step-circle">2</span><div><strong>Navigates the live page</strong><br /><span style="color:var(--muted); font-size:14px;">Playwright MCP opens the route and captures the current DOM state.</span></div></li>
+        <li><span class="step-circle">3</span><div><strong>Ranks up to 3 candidates</strong><br /><span style="color:var(--muted); font-size:14px;">Ordered by stability: <code>data-hook/testid</code> &rarr; <code>ARIA role</code> &rarr; <code>label/text</code> &rarr; <code>CSS</code>.</span></div></li>
+        <li><span class="step-circle">4</span><div><strong>Interactive patching &amp; verification</strong><br /><span style="color:var(--muted); font-size:14px;">Shows the diff, applies the confirmed patch to <code>src/pages/</code>, and re-runs the spec.</span></div></li>
+      </ul>
+      <div>
+        <div class="card">
+          <h3>Two-Layer Healing</h3>
+          <p><strong>Layer 1 — Runtime (<code>SmartLocatorDiagnostics</code>):</strong> Logs candidate replacements to console during a failure — zero file changes in CI.<br /><br /><strong>Layer 2 — Interactive (<code>/heal-locators</code>):</strong> Confirm and patch the Page Object permanently.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8 -->
+  <div class="slide">
+    <h2>Enterprise Toolkit &amp; AI Capabilities</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>🔍 Virtualized DOM Table Reader</h3>
+        <p><code>readAllVirtualizedRows()</code> scrolls bidirectional virtualized lists keyed by <code>data-index</code> so unmounted top rows are preserved, verifying total count against <code>"Showing N entries"</code>.</p>
+      </div>
+      <div class="card">
+        <h3>🔑 In-Memory Token Borrowing</h3>
+        <p><code>InMemoryTokenClient</code> intercepts the SPA's next outgoing network request to borrow its Bearer token for direct GraphQL and REST backend assertions.</p>
+      </div>
+      <div class="card">
+        <h3>♻️ On-Demand Data Supply &amp; Teardown</h3>
+        <p><code>EntitySupplyManager</code> finds or provisions required records on <code>dev</code> and runs LIFO auto-cleanup in <code>afterEach</code> while protecting golden baseline IDs.</p>
+      </div>
+      <div class="card">
+        <h3>📦 Deep File Download Inspector</h3>
+        <p><code>FileDownloadInspector</code> parses downloaded streams to verify CSV headers/rows, PDF signatures (<code>%PDF-</code>), and ZIP/XLSX magic bytes.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9 -->
+  <div class="slide">
+    <h2>TMS Integration (Testmo / TestRail)</h2>
+    <div class="flow-pills">
+      <span class="pill">/create-tests</span> &rarr;
+      <span class="pill highlight">Cases created in TMS folder</span> &rarr;
+      <span class="pill highlight">tmsCase(id) in test code</span> &rarr;
+      <span class="pill">CI Run</span> &rarr;
+      <span class="pill highlight">JUnit Results Linked</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Folder Routing (<code>TMS_FOLDER_ID</code>)</h3>
+        <pre style="margin-top:8px;"><code>TMS Repository Tree:
+  [10] Core Platform
+    [12] Regression Suite  ← TMS_FOLDER_ID=12</code></pre>
+      </div>
+      <div>
+        <div class="card">
+          <h3>Self-Describing CI Run Names</h3>
+          <p><code>Pipeline 12345 | stage | @smoke | 2 shard(s)</code> — every run is identifiable at a glance.</p>
+        </div>
+        <div class="card">
+          <h3>Non-Blocking Submission</h3>
+          <p>JUnit XML uploads run with <code>continue-on-error: true</code> so external TMS downtime never breaks a deployment pipeline.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10 -->
+  <div class="slide">
+    <h2>Configurable CI/CD Pipeline</h2>
+    <div class="flow-pills">
+      <span class="pill">resolve-context</span> &rarr;
+      <span class="pill highlight">playwright-tests (1–8 shards)</span> &rarr;
+      <span class="pill">report-merge</span> +
+      <span class="pill">tms-submit</span> &rarr;
+      <span class="pill">GitHub Pages</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Execution Modes</h3>
+        <table>
+          <thead><tr><th>Trigger</th><th>Tags</th><th>Shards</th></tr></thead>
+          <tbody>
+            <tr><td>Push / PR</td><td><code>@smoke</code></td><td>2</td></tr>
+            <tr><td>Scheduled Nightly</td><td><code>@regression</code></td><td>4</td></tr>
+            <tr><td>Manual Dispatch</td><td>Dropdown choice</td><td>1–8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Manual Dispatch Inputs</h3>
+        <table>
+          <thead><tr><th>Input</th><th>Options</th></tr></thead>
+          <tbody>
+            <tr><td><code>tenant</code></td><td><code>acme</code> • <code>globex</code></td></tr>
+            <tr><td><code>environment</code></td><td><code>dev</code> • <code>stage</code> (RO) • <code>prod</code> (locked)</td></tr>
+            <tr><td><code>shards</code></td><td><code>1</code> • <code>2</code> • <code>4</code> • <code>8</code></td></tr>
+            <tr><td><code>custom_url</code></td><td>Ephemeral PR preview override</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11 -->
+  <div class="slide">
+    <h2>How Teams Derive Their Project</h2>
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <h3>4 Commands to Start</h3>
+          <pre style="margin-top:8px;"><code>gh repo create my-e2e --template deniszilai2000/playwright-ts-starter-kit
+cd my-e2e &amp;&amp; cp .env.example .env
+npm install &amp;&amp; npx playwright install chromium
+npm run lint &amp;&amp; npm run type-check &amp;&amp; npm run test:dev</code></pre>
+        </div>
+        <div class="card">
+          <h3>Then Add Your Feature</h3>
+          <pre style="margin-top:8px;"><code># 1. Run /project-setup once to set tenant &amp; URLs
+# 2. Run /create-tests with a Jira/Linear ticket
+#    → Page Object + Spec + TMS cases created</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>What Stays Consistent</h3>
+          <p><code>BasePage</code> • 3-tier safety locks • CI sharding • ESLint rules • <code>CredentialProvider</code> • <code>EntitySupplyManager</code></p>
+        </div>
+        <div class="card">
+          <h3>What Each Project Owns</h3>
+          <p>Domain Page Objects (<code>src/pages/</code>) • Specs (<code>tests/e2e/</code>) • <code>.env</code> tenant &amp; folder settings</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12 -->
+  <div class="slide">
+    <div class="eyebrow">SUMMARY</div>
+    <h1>What We Built</h1>
+    <div class="grid-2" style="margin-top:24px;">
+      <ul class="bullet-list">
+        <li>Playwright + TypeScript boilerplate with POM, multi-browser &amp; step reporting</li>
+        <li>3-Tier environment safety (<code>dev</code> write, <code>stage</code> read-only, <code>prod</code> locked to <code>@prod-safe</code>)</li>
+        <li><code>/create-tests</code>: Ticket + PR diff &rarr; TMS case &rarr; Page Object &amp; Spec end-to-end</li>
+        <li><code>/heal-locators</code> + <code>SmartLocatorDiagnostics</code> two-layer selector repair</li>
+      </ul>
+      <ul class="bullet-list">
+        <li>Virtualized table reader, secret masking (<code>fillSecure</code>), and in-memory token borrowing</li>
+        <li>On-demand test data provisioning &amp; LIFO auto-cleanup (<code>EntitySupplyManager</code>)</li>
+        <li>HashiCorp Vault-ready credential abstraction (<code>CredentialProvider</code>)</li>
+        <li>Sharded GitHub Actions pipeline + ESLint zero-flakiness quality gates</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer Navigation -->
+  <div class="deck-footer">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 8.33%;"></div>
+    </div>
+    <div class="nav-controls">
+      <button class="nav-btn" id="prevBtn" type="button">&larr;</button>
+      <span class="slide-counter" id="slideCounter">1 / 12</span>
+      <button class="nav-btn" id="nextBtn" type="button">&rarr;</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slideCounter');
+    const fill = document.getElementById('progressFill');
+    let current = 0;
+
+    function showSlide(idx) {
+      current = Math.max(0, Math.min(slides.length - 1, idx));
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      fill.style.width = `${((current + 1) / slides.length) * 100}%`;
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => showSlide(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => showSlide(current + 1));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') showSlide(current + 1);
+      if (e.key === 'ArrowLeft') showSlide(current - 1);
+    });
+  </script>
+</body>
+</html>
