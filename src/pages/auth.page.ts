@@ -2,11 +2,10 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
- * Enterprise Authentication Page Object (`AuthPage`)
+ * ArgonQA™ Enterprise Authentication Page Object (`AuthPage`)
  *
  * Handles SSO / IAM sign-in flows with `fillSecure` credential masking
- * so passwords or tokens never appear in HTML or Allure step logs.
- * Configure selectors for the client application during `/project-setup`.
+ * so passwords or tokens never appear in HTML, JUnit, or Allure step logs.
  */
 export class AuthPage extends BasePage {
   private readonly usernameInput: Locator;
@@ -16,10 +15,10 @@ export class AuthPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.usernameInput = this.getByHook('auth-username').or(this.getByTestId('username'));
-    this.passwordInput = this.getByHook('auth-password').or(this.getByTestId('password'));
-    this.submitButton = this.getByHook('auth-submit').or(this.getByTestId('login-submit'));
-    this.errorAlert = this.getByHook('auth-error').or(this.page.getByRole('alert'));
+    this.usernameInput = this.getByTestId('auth-username').or(this.getByTestAttr('username'));
+    this.passwordInput = this.getByTestId('auth-password').or(this.getByTestAttr('password'));
+    this.submitButton = this.getByTestId('auth-submit').or(this.getByTestAttr('login-submit'));
+    this.errorAlert = this.getByTestId('auth-error').or(this.page.getByRole('alert'));
   }
 
   async signIn(username: string, password: string): Promise<void> {

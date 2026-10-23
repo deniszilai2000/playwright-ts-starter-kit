@@ -1,543 +1,913 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI-Driven Playwright Automation Boilerplate — 12-Slide Deck</title>
+  <title>ArgonQA™ — Deterministic Playwright + Gemini 4 Argon Architecture Deck</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card: #131b2e;
-      --card-border: #1e293b;
-      --ink: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #60a5fa;
-      --accent-soft: rgba(96, 165, 250, 0.14);
-      --green: #34d399;
-      --amber: #fbbf24;
-      --code-bg: #070a12;
+      --bg-void: #05080f;
+      --bg-panel: #0b111e;
+      --bg-card: #111a2e;
+      --bg-elevated: #17233d;
+      --border: rgba(148, 163, 184, 0.14);
+      --border-glow: rgba(16, 185, 129, 0.45);
+      --text-main: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --emerald: #10b981;
+      --cyan: #06b6d4;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --indigo: #6366f1;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, monospace;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(circle at 20% 20%, #111827 0%, #070a12 100%);
-      color: var(--ink);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .slide {
-      display: none;
-      max-width: 1120px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 48px 64px;
-      animation: fadeSlide 0.25s ease;
-    }
-    .slide.active { display: block; }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .eyebrow {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 14px;
-    }
-    h1 {
-      font-size: 54px;
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 18px;
-    }
-    h2 {
-      font-size: 36px;
-      font-weight: 800;
-      border-left: 4px solid var(--accent);
-      padding-left: 16px;
-      margin-bottom: 28px;
-    }
-    .lead {
-      font-size: 20px;
-      color: var(--muted);
-      max-width: 680px;
-      line-height: 1.5;
-    }
-    .grid-2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: start; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 22px 24px;
-      margin-bottom: 16px;
-    }
-    .card h3 {
-      font-size: 17px;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-    .card p {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-    .bullet-list { list-style: none; }
-    .bullet-list li {
-      font-size: 17px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .bullet-list li::before {
-      content: "→";
-      color: var(--accent);
-      font-weight: 700;
-    }
-    .step-list { list-style: none; }
-    .step-list li {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-      align-items: flex-start;
-    }
-    .step-circle {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--accent-soft);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 18px 20px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      color: #e2e8f0;
-      overflow-x: auto;
-    }
-    .flow-pills {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-    .pill {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .pill.highlight {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--card-border); }
-    th { color: var(--muted); font-family: monospace; font-size: 11px; text-transform: uppercase; }
 
-    /* Bottom Deck Controls */
-    .deck-footer {
-      position: fixed;
-      bottom: 24px;
-      left: 64px;
-      right: 64px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-void);
+      background-image:
+        radial-gradient(circle at 12% 15%, rgba(16, 185, 129, 0.09), transparent 32%),
+        radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.09), transparent 35%),
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Top Proprietary Command Header */
+    .command-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
+      padding: 14px 32px;
+      background: rgba(5, 8, 15, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
     }
-    .progress-bar {
-      height: 3px;
-      background: var(--card-border);
-      width: 240px;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      transition: width 0.25s ease;
-    }
-    .nav-controls {
+
+    .brand-cluster {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .nav-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      color: var(--ink);
-      cursor: pointer;
-      font-size: 16px;
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--emerald), var(--cyan));
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 15px;
+      color: #03120e;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
     }
-    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .slide-counter {
-      font-family: monospace;
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-title span {
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .module-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .module-pill {
+      background: rgba(17, 26, 46, 0.75);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .module-pill:hover,
+    .module-pill.active {
+      color: var(--text-main);
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.14);
+    }
+
+    .mode-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      border-color: var(--cyan);
+      background: rgba(6, 182, 212, 0.12);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--emerald), var(--cyan));
+      color: #04130f;
+      border: none;
+      font-weight: 700;
+    }
+
+    /* Main Container */
+    .deck-container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 36px 28px 96px;
+    }
+
+    /* Keynote Single-Module Mode vs Scroll Mode */
+    body.keynote-mode .deck-section {
+      display: none;
+      min-height: calc(100vh - 150px);
+      align-content: center;
+    }
+    body.keynote-mode .deck-section.active-module {
+      display: block;
+      animation: fadeSlide 0.28s ease-out;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .deck-section {
+      margin-bottom: 64px;
+      background: rgba(11, 17, 30, 0.82);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .deck-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--emerald), var(--cyan), transparent);
+    }
+
+    .module-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--emerald);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 4vw, 50px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.12;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: clamp(24px, 2.6vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .lead {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 840px;
+      margin-bottom: 28px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #34d399, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Bento Grids */
+    .bento-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .bento-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 24px;
+    }
+
+    .bento-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(6, 182, 212, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .metric-stat {
+      font-family: var(--font-mono);
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--emerald);
+      margin-bottom: 4px;
+    }
+
+    /* Code Terminal */
+    pre {
+      background: #060a12;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 12px;
+      padding: 18px 20px;
+      font-family: var(--font-mono);
       font-size: 13px;
-      color: var(--muted);
+      line-height: 1.65;
+      color: #e2e8f0;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .tok-kw { color: #f472b6; }
+    .tok-fn { color: #34d399; }
+    .tok-str { color: #fbbf24; }
+    .tok-cm { color: #64748b; font-style: italic; }
+
+    /* Interactive Tabs inside Modules */
+    .interactive-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--emerald);
+      color: var(--emerald);
+    }
+
+    /* Stability Score Meter */
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .score-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      min-width: 74px;
+      text-align: center;
+    }
+
+    .score-98 { background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .score-92 { background: rgba(6, 182, 212, 0.18); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4); }
+    .score-85 { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+
+    /* ROI Simulator Sliders */
+    .roi-control {
+      margin-bottom: 18px;
+    }
+    .roi-control label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+    .roi-control input[type="range"] {
+      width: 100%;
+      accent-color: var(--emerald);
+      cursor: pointer;
+    }
+
+    /* Keynote Bottom Dock */
+    .keynote-dock {
+      position: fixed;
+      bottom: 20px;
+      right: 28px;
+      z-index: 120;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(11, 17, 30, 0.92);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 99px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .dock-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .dock-btn:hover {
+      border-color: var(--emerald);
+      color: var(--emerald);
     }
   </style>
 </head>
-<body>
+<body class="keynote-mode">
 
-  <!-- Slide 1 -->
-  <div class="slide active">
-    <div class="eyebrow">ENTERPRISE QA PLATFORM • GEMINI 4 ARGON</div>
-    <h1>AI-Driven Playwright<br />Automation Boilerplate</h1>
-    <p class="lead">A shared, zero-flakiness foundation for multi-stream engineering teams — consistent, scalable, and powered by Google Antigravity (Gemini 4 Argon).</p>
-    <p style="margin-top: 36px; font-size: 13px; color: var(--muted); font-family: monospace;">Use ← / → arrow keys or click the buttons in the bottom-right to navigate</p>
-  </div>
-
-  <!-- Slide 2 -->
-  <div class="slide">
-    <h2>The Challenge</h2>
-    <div class="grid-2">
-      <ul class="bullet-list">
-        <li>Multiple product streams need reliable end-to-end test automation</li>
-        <li>Each team starts from scratch — inconsistent patterns &amp; duplicated setup effort</li>
-        <li>Selectors break silently during UI refactors; failures are slow to diagnose</li>
-        <li>Test cases live in Test Management (Testmo/TestRail) disconnected from code</li>
-        <li>No shared CI/CD or environment safety standard across dev, stage, and prod</li>
-      </ul>
-      <div class="card">
-        <h3>What We Built</h3>
-        <p>One enterprise boilerplate that teams fork or clone. Every stream inherits the same Page Object toolkit, 3-tier safety locks, reporting, and Gemini 4 Argon skills out of the box — while staying free to add their own pages and specs.</p>
+  <!-- TOP PROPRIETARY COMMAND HEADER -->
+  <header class="command-bar">
+    <div class="brand-cluster">
+      <div class="brand-mark">AQ</div>
+      <div class="brand-title">
+        ArgonQA™ <span>GEMINI 4 ARGON + PLAYWRIGHT TS</span>
       </div>
     </div>
-  </div>
 
-  <!-- Slide 3 -->
-  <div class="slide">
-    <h2>Tech Stack</h2>
-    <div class="grid-3">
-      <div class="card">
-        <h3>🎭 Playwright + TypeScript</h3>
-        <p>Multi-browser, parallel, strictly typed. Page Object Model with a shared <code>BasePage</code> that wraps every action as a report step.</p>
-      </div>
-      <div class="card">
-        <h3>📊 HTML / Allure + TMS</h3>
-        <p>Rich reports with screenshots, video, and traces on failure. Test cases link 1:1 via <code>tmsCase(id)</code> and sync automatically in CI.</p>
-      </div>
-      <div class="card">
-        <h3>🧠 Gemini 4 Argon</h3>
-        <p>Interactive test generation, failure root-cause analysis, two-layer locator healing, and visual diff explanation without runtime CI flakiness.</p>
-      </div>
-      <div class="card">
-        <h3>🚀 Sharded GitHub Actions</h3>
-        <p>Configurable parallel shards (1–8). Smoke tests on PRs, scheduled regressions, and manual workflow dispatch overrides.</p>
-      </div>
-      <div class="card">
-        <h3>🔐 Vault-Ready Credentials</h3>
-        <p>Reads from <code>.env</code> locally and GitHub Secrets in CI. Swap to HashiCorp Vault by changing <code>CREDENTIAL_PROVIDER=vault</code>.</p>
-      </div>
-      <div class="card">
-        <h3>🛠️ Antigravity Skills</h3>
-        <p>Four slash workflows: <code>/project-setup</code>, <code>/local-setup</code>, <code>/create-tests</code>, and <code>/heal-locators</code>.</p>
-      </div>
+    <nav class="module-pills" id="moduleNav">
+      <button class="module-pill active" onclick="goToModule(0)">01 • Executive Thesis</button>
+      <button class="module-pill" onclick="goToModule(1)">02 • 4-Layer Architecture</button>
+      <button class="module-pill" onclick="goToModule(2)">03 • Blast-Radius Safety</button>
+      <button class="module-pill" onclick="goToModule(3)">04 • Agentic Workflows</button>
+      <button class="module-pill" onclick="goToModule(4)">05 • Enterprise Hardening</button>
+      <button class="module-pill" onclick="goToModule(5)">06 • Sharded CI & TestOps</button>
+      <button class="module-pill" onclick="goToModule(6)">07 • Live ROI & 14-Day Delivery</button>
+    </nav>
+
+    <div class="mode-actions">
+      <button class="btn-action" id="toggleModeBtn" onclick="togglePresentationMode()">Switch to Scroll View</button>
+      <a class="btn-action btn-primary" href="./ARCHITECTURE_GUIDE.html">Technical Blueprint &rarr;</a>
     </div>
-  </div>
+  </header>
 
-  <!-- Slide 4 -->
-  <div class="slide">
-    <h2>Project Structure</h2>
-    <div class="grid-2">
-      <pre><code>src/
-  pages/
-    base.page.ts          ← shared enterprise toolkit
-    auth.page.ts          ← SSO/IAM login shell
-    navigation.page.ts    ← global app shell
-  fixtures/
-    base.fixture.ts       ← dependency-injected pages
-  helpers/
-    environment.helper.ts ← resolveContext() &amp; isDevRun()
-    credential-provider.helper.ts ← .env / Vault abstraction
-    tms.helper.ts         ← tmsCase() step linker
-    tms-api.helper.ts     ← TMS REST client
-    smart-locator.helper.ts ← two-layer locator diagnostics
-tests/
-  setup/                  ← auth.setup.ts &amp; seed-data.setup.ts
-  e2e/                    ← domain specs (1 TMS step = 1 test)
-.agent/skills/            ← 4 Gemini 4 Argon skills</code></pre>
-      <div>
+  <main class="deck-container">
+
+    <!-- MODULE 01: EXECUTIVE THESIS -->
+    <section class="deck-section active-module" data-module="0">
+      <div class="module-kicker">Module 01 // Proprietary Engineering Paradigm</div>
+      <h1>AI Speed at Build Time.<br /><span class="gradient-text">Zero AI Flakiness at Runtime.</span></h1>
+      <p class="lead">
+        Most "AI testing tools" inject LLM calls into CI test execution—causing slow pipelines, non-deterministic pass/fail flips, and leaked credentials. <strong>ArgonQA™</strong> separates <strong>Agentic Authoring (Google Antigravity / Gemini 4 Argon)</strong> from <strong>Deterministic Execution (Strict Playwright + TypeScript)</strong>.
+      </p>
+
+      <div class="bento-4" style="margin-bottom: 28px;">
         <div class="card">
-          <h3>Teams Add</h3>
-          <p>Their own Page Objects in <code>src/pages/</code>, register them in <code>src/fixtures/base.fixture.ts</code>, and write specs in <code>tests/e2e/</code>. Everything else is inherited.</p>
+          <div class="metric-stat">0 LLM Calls</div>
+          <div class="card-title">During CI Execution</div>
+          <p>100% deterministic TypeScript in GitHub Actions, GitLab CI, or Azure DevOps. Zero token cost per test run.</p>
         </div>
         <div class="card">
-          <h3>Teams Don't Touch</h3>
-          <p><code>BasePage</code>, environment safety gates, CI pipeline, <code>CredentialProvider</code>, TMS client, and <code>eslint.config.mjs</code>.</p>
+          <div class="metric-stat">10x Faster</div>
+          <div class="card-title">Spec Authoring & Healing</div>
+          <p>Gemini 4 Argon inspects live DOM accessibility trees via Playwright MCP to scaffold & repair Page Objects.</p>
+        </div>
+        <div class="card">
+          <div class="metric-stat">3-Tier Guard</div>
+          <div class="card-title">Blast-Radius Isolation</div>
+          <p>Cryptographic & runtime environment guards prevent mutating tests from ever executing on Stage or Prod.</p>
+        </div>
+        <div class="card">
+          <div class="metric-stat">14 Days</div>
+          <div class="card-title">Turnkey Client Handover</div>
+          <p>Delivered as a self-contained, zero-lock-in repository with Multi-Cloud Vault & TestOps telemetry wired in.</p>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Slide 5 -->
-  <div class="slide">
-    <h2>What a Test Looks Like</h2>
-    <div class="grid-2">
-      <pre><code>import { test } from '../../src/fixtures/base.fixture';
-import { isDevRun } from '../../src/helpers/environment.helper';
-import { tmsCase } from '../../src/helpers/tms.helper';
+      <div class="bento-2">
+        <div class="card" style="border-left: 3px solid var(--rose);">
+          <div class="card-header">
+            <span class="card-title" style="color: #fda4af;">Why Legacy & Runtime-AI Suites Fail</span>
+          </div>
+          <p>
+            • Raw <code>page.locator()</code> calls scattered across hundreds of spec files.<br />
+            • Runtime AI wrappers adding 4–8 seconds of latency per click and masking real bugs.<br />
+            • Destructive E2E tests accidentally corrupting staging or production databases.<br />
+            • Hardcoded passwords leaking into HTML and Allure step logs.
+          </p>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--emerald);">
+          <div class="card-header">
+            <span class="card-title" style="color: #6ee7b7;">The ArgonQA™ Deterministic Standard</span>
+          </div>
+          <p>
+            • <strong>Strict Page Object Encapsulation</strong> enforced by custom ESLint AST rules.<br />
+            • <strong>0–100 Selector Stability Scoring</strong> prioritizing W3C ARIA roles &amp; test attributes.<br />
+            • <strong>Self-Cleaning Data Supply</strong> (`EntitySupplyManager`) with LIFO teardown queues.<br />
+            • <strong>Redacted Secret Injection</strong> (`fillSecure`) + HashiCorp Vault &amp; Doppler brokers.
+          </p>
+        </div>
+      </div>
+    </section>
 
-test.describe('Order Management (@smoke @regression)', () => {
-  test('1 — active orders sort chronologically by default @prod-safe', async ({
+    <!-- MODULE 02: 4-LAYER ARCHITECTURE -->
+    <section class="deck-section" data-module="1">
+      <div class="module-kicker">Module 02 // Clean-Room Separation of Concerns</div>
+      <h2>The 4-Layer ArgonQA™ Architecture</h2>
+      <p class="lead">
+        Product teams only write business-readable Page Objects and Spec files. The underlying Core Engine, Security Brokers, and Agentic Skills work out of the box.
+      </p>
+
+      <div class="bento-2">
+        <div>
+          <div class="card" style="margin-bottom: 16px; border-left: 3px solid var(--emerald);">
+            <div class="card-title">Layer 1 — Business-Readable Spec Layer (<code>tests/e2e/</code>)</div>
+            <p>Zero raw selectors allowed. 1 TestOps step = 1 Playwright test with <code>tmsCase()</code> traceability and <code>isDevRun()</code> mutation guards.</p>
+          </div>
+          <div class="card" style="margin-bottom: 16px; border-left: 3px solid var(--cyan);">
+            <div class="card-title">Layer 2 — Typed Page Object &amp; SLA Engine (<code>src/pages/</code>)</div>
+            <p>Extends <code>BasePage</code>: automatic step telemetry, <code>fillSecure()</code> secret masking, <code>interceptApiCall()</code> network assertions, and <code>assertInteractionSla()</code> performance budgets.</p>
+          </div>
+          <div class="card" style="margin-bottom: 16px; border-left: 3px solid var(--amber);">
+            <div class="card-title">Layer 3 — Resilience &amp; Secret Brokers (<code>src/helpers/</code>)</div>
+            <p>Includes <code>CredentialProvider</code> (Env/Vault/Doppler), <code>EntitySupplyManager</code> (LIFO cleanup), <code>FileDownloadInspector</code> (PDF/XLSX binary magic-byte checks), and <code>SmartLocatorDiagnostics</code>.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--indigo);">
+            <div class="card-title">Layer 4 — Gemini 4 Argon Agentic Skills (<code>.agent/skills/</code>)</div>
+            <p>Interactive slash-workflows (<code>/project-setup</code>, <code>/local-setup</code>, <code>/create-tests</code>, <code>/heal-locators</code>) powered by Playwright MCP live DOM inspection.</p>
+          </div>
+        </div>
+
+        <div>
+          <pre><code><span class="tok-cm">// tests/e2e/smoke/navigation.spec.ts — 100% Selector-Free Spec</span>
+<span class="tok-kw">import</span> { test } <span class="tok-kw">from</span> <span class="tok-str">'../../../src/fixtures/base.fixture'</span>;
+<span class="tok-kw">import</span> { isDevRun } <span class="tok-kw">from</span> <span class="tok-str">'../../../src/helpers/environment.helper'</span>;
+<span class="tok-kw">import</span> { tmsCase } <span class="tok-kw">from</span> <span class="tok-str">'../../../src/helpers/tms.helper'</span>;
+
+test.<span class="tok-fn">describe</span>(<span class="tok-str">'Workspace Shell (@smoke @sanity @regression)'</span>, () =&gt; {
+  test(<span class="tok-str">'1 — shell loads within 1200ms SLA @prod-safe'</span>, <span class="tok-kw">async</span> ({
     navigationPage,
-  }) => {
-    await tmsCase(100001);
+  }) =&gt; {
+    <span class="tok-kw">await</span> <span class="tok-fn">tmsCase</span>(<span class="tok-str">'TC-10001'</span>, { severity: <span class="tok-str">'critical'</span> });
 
-    await navigationPage.navigateTo('/');
-    await navigationPage.expectPageTitleToMatch(/Dashboard/i);
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">assertInteractionSla</span>(<span class="tok-str">'Initial Shell Render'</span>, 1200, <span class="tok-kw">async</span> () =&gt; {
+      <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">navigateTo</span>(<span class="tok-str">'https://example.com'</span>);
+    });
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">expectPageTitleToMatch</span>(/Example Domain/i);
+  });
+
+  test(<span class="tok-str">'2 — state-mutating workflow runs on verified dev only'</span>, <span class="tok-kw">async</span> ({
+    navigationPage,
+  }) =&gt; {
+    test.<span class="tok-fn">skip</span>(!<span class="tok-fn">isDevRun</span>(), <span class="tok-str">'Mutating test: restricted to dev environment'</span>);
+    <span class="tok-kw">await</span> <span class="tok-fn">tmsCase</span>(<span class="tok-str">'TC-10002'</span>);
+
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">navigateTo</span>(<span class="tok-str">'https://example.com'</span>);
   });
 });</code></pre>
-      <div>
-        <div class="card">
-          <h3>Zero Raw Selectors in Specs</h3>
-          <p>Enforced mechanically by <code>playwright/no-raw-locators: 'error'</code> in ESLint.</p>
-        </div>
-        <div class="card">
-          <h3><code>tmsCase(100001)</code></h3>
-          <p>Links the test to case #100001 as a clickable annotation in HTML/Allure reports and JUnit XML.</p>
-        </div>
-        <div class="card">
-          <h3>Run by Tag</h3>
-          <p><code>npx playwright test --grep @smoke</code></p>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Slide 6 -->
-  <div class="slide">
-    <h2>/create-tests</h2>
-    <p style="color:var(--muted); margin-bottom:22px;">From ticket &amp; PR diff to committed spec file — guided by Gemini 4 Argon</p>
-    <ul class="step-list">
-      <li><span class="step-circle">1</span><div><strong>Reads the ticket &amp; dev PR diff</strong><br /><span style="color:var(--muted); font-size:14px;">Extracts title, description, comments, and developer code changes to catch undocumented UI updates.</span></div></li>
-      <li><span class="step-circle">2</span><div><strong>Explores the live app via Playwright MCP</strong><br /><span style="color:var(--muted); font-size:14px;">Opens the route in Chromium, inspects the accessibility tree, and identifies stable <code>data-hook</code> / <code>data-test</code> attributes.</span></div></li>
-      <li><span class="step-circle">3</span><div><strong>Proposes test steps for confirmation</strong><br /><span style="color:var(--muted); font-size:14px;">Happy path • negative • edge cases • accessibility (1 TMS step = 1 Playwright test).</span></div></li>
-      <li><span class="step-circle">4</span><div><strong>Resolves TMS folder &amp; creates cases</strong><br /><span style="color:var(--muted); font-size:14px;">Uses <code>TMS_FOLDER_ID</code> and <code>TmsApiClient</code> to register cases with <code>automated</code> + <code>ai-generated</code> tags.</span></div></li>
-      <li><span class="step-circle">5</span><div><strong>Writes Page Object &amp; Spec</strong><br /><span style="color:var(--muted); font-size:14px;">Generates strictly typed code, runs <code>npm run lint &amp;&amp; npm run type-check</code>, and verifies the test passes on <code>dev</code>.</span></div></li>
-    </ul>
-  </div>
+    <!-- MODULE 03: BLAST-RADIUS ENVIRONMENT ISOLATION -->
+    <section class="deck-section" data-module="2">
+      <div class="module-kicker">Module 03 // Zero-Accident Production Governance</div>
+      <h2>3-Tier Blast-Radius Environment Isolation</h2>
+      <p class="lead">
+        Click any environment tier below to inspect how <code>resolveContext()</code>, URL hostname inspection, and <code>PROTECTED_ENTITY_IDS</code> enforce zero data corruption across your deployment pipeline.
+      </p>
 
-  <!-- Slide 7 -->
-  <div class="slide">
-    <h2>/heal-locators</h2>
-    <p style="color:var(--muted); margin-bottom:22px;">Two-layer interactive selector repair via Playwright MCP</p>
-    <div class="grid-2">
-      <ul class="step-list">
-        <li><span class="step-circle">1</span><div><strong>Auto-detects broken selector</strong><br /><span style="color:var(--muted); font-size:14px;">Reads <code>test-results/</code> to locate the failing Page Object method, line number, and target URL.</span></div></li>
-        <li><span class="step-circle">2</span><div><strong>Navigates the live page</strong><br /><span style="color:var(--muted); font-size:14px;">Playwright MCP opens the route and captures the current DOM state.</span></div></li>
-        <li><span class="step-circle">3</span><div><strong>Ranks up to 3 candidates</strong><br /><span style="color:var(--muted); font-size:14px;">Ordered by stability: <code>data-hook/testid</code> &rarr; <code>ARIA role</code> &rarr; <code>label/text</code> &rarr; <code>CSS</code>.</span></div></li>
-        <li><span class="step-circle">4</span><div><strong>Interactive patching &amp; verification</strong><br /><span style="color:var(--muted); font-size:14px;">Shows the diff, applies the confirmed patch to <code>src/pages/</code>, and re-runs the spec.</span></div></li>
-      </ul>
-      <div>
-        <div class="card">
-          <h3>Two-Layer Healing</h3>
-          <p><strong>Layer 1 — Runtime (<code>SmartLocatorDiagnostics</code>):</strong> Logs candidate replacements to console during a failure — zero file changes in CI.<br /><br /><strong>Layer 2 — Interactive (<code>/heal-locators</code>):</strong> Confirm and patch the Page Object permanently.</p>
+      <div class="interactive-tabs">
+        <button class="tab-btn active" onclick="selectEnvTab('dev', this)">DEV — Self-Cleaning Write Mode</button>
+        <button class="tab-btn" onclick="selectEnvTab('stage', this)">STAGE — Read-Only Release Gate</button>
+        <button class="tab-btn" onclick="selectEnvTab('prod', this)">PROD — Locked to @prod-safe</button>
+      </div>
+
+      <div id="envPanelContent" class="card" style="padding: 28px;">
+        <div class="bento-2">
+          <div>
+            <h3 id="envTitle" style="font-size: 22px; color: var(--emerald); margin-bottom: 10px;">DEV Environment: Full CRUD + LIFO Self-Cleanup</h3>
+            <p id="envDesc" style="font-size: 15px; margin-bottom: 16px;">
+              On <code>ENV=dev</code>, full regression suites provision fresh records on demand via <code>EntitySupplyManager.findOrProvision()</code> and automatically tear them down in reverse (LIFO) order after the test completes—while strictly blocking any modification to golden baseline IDs in <code>PROTECTED_ENTITY_IDS</code>.
+            </p>
+            <div style="font-family: var(--font-mono); font-size: 13px; color: var(--cyan);" id="envCommand">
+              $ ENV=dev npx playwright test --project=chromium
+            </div>
+          </div>
+          <pre><code id="envCode">test.skip(!isDevRun(), 'Mutating test: runs on dev only');
+
+const order = await entitySupply.findOrProvision({
+  entityType: 'SubscriptionOrder',
+  findExistingFn: () =&gt; api.findDraftOrder(),
+  provisionNewFn: () =&gt; api.createDraftOrder(),
+  cleanupFn: (id) =&gt; api.deleteDraftOrder(id), // LIFO auto-cleanup
+});</code></pre>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Slide 8 -->
-  <div class="slide">
-    <h2>Enterprise Toolkit &amp; AI Capabilities</h2>
-    <div class="grid-2">
-      <div class="card">
-        <h3>🔍 Virtualized DOM Table Reader</h3>
-        <p><code>readAllVirtualizedRows()</code> scrolls bidirectional virtualized lists keyed by <code>data-index</code> so unmounted top rows are preserved, verifying total count against <code>"Showing N entries"</code>.</p>
-      </div>
-      <div class="card">
-        <h3>🔑 In-Memory Token Borrowing</h3>
-        <p><code>InMemoryTokenClient</code> intercepts the SPA's next outgoing network request to borrow its Bearer token for direct GraphQL and REST backend assertions.</p>
-      </div>
-      <div class="card">
-        <h3>♻️ On-Demand Data Supply &amp; Teardown</h3>
-        <p><code>EntitySupplyManager</code> finds or provisions required records on <code>dev</code> and runs LIFO auto-cleanup in <code>afterEach</code> while protecting golden baseline IDs.</p>
-      </div>
-      <div class="card">
-        <h3>📦 Deep File Download Inspector</h3>
-        <p><code>FileDownloadInspector</code> parses downloaded streams to verify CSV headers/rows, PDF signatures (<code>%PDF-</code>), and ZIP/XLSX magic bytes.</p>
-      </div>
-    </div>
-  </div>
+    <!-- MODULE 04: AGENTIC WORKFLOWS & 0-100 STABILITY SCORE -->
+    <section class="deck-section" data-module="3">
+      <div class="module-kicker">Module 04 // Gemini 4 Argon + Playwright MCP</div>
+      <h2>Agentic Authoring &amp; 0–100 Locator Stability Scoring</h2>
+      <p class="lead">
+        Engineers invoke slash-skills inside Google Antigravity to convert tickets into specs (<code>/create-tests</code>) and repair broken selectors (<code>/heal-locators</code>) using our deterministic 0–100 Stability Score hierarchy.
+      </p>
 
-  <!-- Slide 9 -->
-  <div class="slide">
-    <h2>TMS Integration (Testmo / TestRail)</h2>
-    <div class="flow-pills">
-      <span class="pill">/create-tests</span> &rarr;
-      <span class="pill highlight">Cases created in TMS folder</span> &rarr;
-      <span class="pill highlight">tmsCase(id) in test code</span> &rarr;
-      <span class="pill">CI Run</span> &rarr;
-      <span class="pill highlight">JUnit Results Linked</span>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Folder Routing (<code>TMS_FOLDER_ID</code>)</h3>
-        <pre style="margin-top:8px;"><code>TMS Repository Tree:
-  [10] Core Platform
-    [12] Regression Suite  ← TMS_FOLDER_ID=12</code></pre>
-      </div>
-      <div>
+      <div class="bento-2">
         <div class="card">
-          <h3>Self-Describing CI Run Names</h3>
-          <p><code>Pipeline 12345 | stage | @smoke | 2 shard(s)</code> — every run is identifiable at a glance.</p>
+          <div class="card-title" style="margin-bottom: 14px; color: var(--emerald);"><code>/create-tests</code> — Ticket to PR in 4 Minutes</div>
+          <p style="margin-bottom: 10px;"><strong>1. Context Ingestion:</strong> Reads Jira/Linear requirements + developer PR diff to spot edge cases and feature flags.</p>
+          <p style="margin-bottom: 10px;"><strong>2. Live MCP DOM Probe:</strong> Opens the target route in headless Chromium via <code>.mcp.json</code> and maps accessible elements.</p>
+          <p style="margin-bottom: 10px;"><strong>3. Human-in-the-Loop Approval:</strong> Proposes happy-path, negative, and <code>@prod-safe</code> test steps for engineer sign-off.</p>
+          <p><strong>4. Automated Scaffolding &amp; Verification:</strong> Provisions TestOps cases, writes the Page Object + Spec, and runs <code>npx playwright test</code> + <code>npm run lint</code>.</p>
         </div>
+
         <div class="card">
-          <h3>Non-Blocking Submission</h3>
-          <p>JUnit XML uploads run with <code>continue-on-error: true</code> so external TMS downtime never breaks a deployment pipeline.</p>
+          <div class="card-title" style="margin-bottom: 14px; color: var(--cyan);"><code>/heal-locators</code> — 0–100 Stability Score Engine</div>
+          <div class="score-row">
+            <span class="score-badge score-98">98 / 100</span>
+            <div>
+              <strong>Dedicated Test ID (<code>this.getByTestId('submit-order')</code>)</strong>
+              <p>Immune to copy changes, i18n translations, and CSS refactors.</p>
+            </div>
+          </div>
+          <div class="score-row">
+            <span class="score-badge score-92">92 / 100</span>
+            <div>
+              <strong>W3C Accessible Role (<code>this.page.getByRole('button', { name })</code>)</strong>
+              <p>Verifies real user accessibility tree compliance while remaining resilient.</p>
+            </div>
+          </div>
+          <div class="score-row">
+            <span class="score-badge score-85">85 / 100</span>
+            <div>
+              <strong>Semantic Form Label (<code>this.page.getByLabel('Invoice Date')</code>)</strong>
+              <p>Validates explicit <code>&lt;label for="..."&gt;</code> bindings on form controls.</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Slide 10 -->
-  <div class="slide">
-    <h2>Configurable CI/CD Pipeline</h2>
-    <div class="flow-pills">
-      <span class="pill">resolve-context</span> &rarr;
-      <span class="pill highlight">playwright-tests (1–8 shards)</span> &rarr;
-      <span class="pill">report-merge</span> +
-      <span class="pill">tms-submit</span> &rarr;
-      <span class="pill">GitHub Pages</span>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Execution Modes</h3>
-        <table>
-          <thead><tr><th>Trigger</th><th>Tags</th><th>Shards</th></tr></thead>
-          <tbody>
-            <tr><td>Push / PR</td><td><code>@smoke</code></td><td>2</td></tr>
-            <tr><td>Scheduled Nightly</td><td><code>@regression</code></td><td>4</td></tr>
-            <tr><td>Manual Dispatch</td><td>Dropdown choice</td><td>1–8</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <h3>Manual Dispatch Inputs</h3>
-        <table>
-          <thead><tr><th>Input</th><th>Options</th></tr></thead>
-          <tbody>
-            <tr><td><code>tenant</code></td><td><code>acme</code> • <code>globex</code></td></tr>
-            <tr><td><code>environment</code></td><td><code>dev</code> • <code>stage</code> (RO) • <code>prod</code> (locked)</td></tr>
-            <tr><td><code>shards</code></td><td><code>1</code> • <code>2</code> • <code>4</code> • <code>8</code></td></tr>
-            <tr><td><code>custom_url</code></td><td>Ephemeral PR preview override</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    <!-- MODULE 05: ENTERPRISE HARDENING SUITE -->
+    <section class="deck-section" data-module="4">
+      <div class="module-kicker">Module 05 // Battle-Tested Production Utilities</div>
+      <h2>Built for Complex Enterprise Web Applications</h2>
+      <p class="lead">
+        Out-of-the-box solutions for the 4 hardest problems in enterprise E2E automation: multi-cloud secrets, virtualized data grids, binary file downloads, and hydration timing.
+      </p>
 
-  <!-- Slide 11 -->
-  <div class="slide">
-    <h2>How Teams Derive Their Project</h2>
-    <div class="grid-2">
-      <div>
+      <div class="bento-2">
         <div class="card">
-          <h3>4 Commands to Start</h3>
-          <pre style="margin-top:8px;"><code>gh repo create my-e2e --template deniszilai2000/playwright-ts-starter-kit
-cd my-e2e &amp;&amp; cp .env.example .env
-npm install &amp;&amp; npx playwright install chromium
-npm run lint &amp;&amp; npm run type-check &amp;&amp; npm run test:dev</code></pre>
+          <div class="card-title">1. Multi-Cloud Secret Broker (<code>CredentialProvider</code>)</div>
+          <p style="margin-bottom: 12px;">Switch between <code>env</code>, <code>HashiCorp Vault</code>, and <code>Doppler</code> via a single environment variable—paired with <code>fillSecure()</code> so secrets are always masked as <code>***REDACTED***</code> in logs.</p>
+          <pre><code>const creds = await CredentialProvider.getCredentials(tenant, env);
+await this.fillSecure(this.passwordInput, creds.password, 'SSO Password');</code></pre>
         </div>
+
         <div class="card">
-          <h3>Then Add Your Feature</h3>
-          <pre style="margin-top:8px;"><code># 1. Run /project-setup once to set tenant &amp; URLs
-# 2. Run /create-tests with a Jira/Linear ticket
-#    → Page Object + Spec + TMS cases created</code></pre>
+          <div class="card-title">2. Virtualized Grid Reader (<code>readAllVirtualizedRows</code>)</div>
+          <p style="margin-bottom: 12px;">Scrolls AG Grid / TanStack / MUI virtualized tables incrementally, indexing rows by <code>data-index</code> so unmounted top rows are preserved in memory and verified against total row counts.</p>
+          <pre><code>const rows = await this.readAllVirtualizedRows({
+  scrollContainer: this.gridViewport,
+  rowLocator: this.gridRow,
+  totalCountLocator: this.paginationSummary,
+});</code></pre>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3. Binary File Signature Inspector (<code>FileDownloadInspector</code>)</div>
+          <p style="margin-bottom: 12px;">Don't just test that a button triggered a download—verify the actual binary magic bytes (<code>%PDF-</code> header, <code>PK\x03\x04</code> XLSX/ZIP archive header, or parsed CSV rows) in memory.</p>
+          <pre><code>const pdfMeta = await FileDownloadInspector.verifyPdfSignature(download);
+expect(pdfMeta.byteLength).toBeGreaterThan(1024);</code></pre>
+        </div>
+
+        <div class="card">
+          <div class="card-title">4. Atomic API Interception &amp; SLA Budgets (<code>BasePage</code>)</div>
+          <p style="margin-bottom: 12px;">Assert backend HTTP status codes and sub-second frontend interaction budgets in a single deterministic call.</p>
+          <pre><code>await this.interceptApiCall('/api/v1/checkout', 200, async () =&gt; {
+  await this.clickElement(this.confirmOrderBtn, 'Confirm Order');
+});</code></pre>
         </div>
       </div>
-      <div>
-        <div class="card">
-          <h3>What Stays Consistent</h3>
-          <p><code>BasePage</code> • 3-tier safety locks • CI sharding • ESLint rules • <code>CredentialProvider</code> • <code>EntitySupplyManager</code></p>
+    </section>
+
+    <!-- MODULE 06: ADAPTIVE CI/CD SHARDING & TESTOPS -->
+    <section class="deck-section" data-module="5">
+      <div class="module-kicker">Module 06 // Parallel Execution &amp; Telemetry</div>
+      <h2>Trigger-Aware CI Sharding &amp; Multi-Provider TestOps</h2>
+      <p class="lead">
+        Our GitHub Actions workflow dynamically scales parallel shards based on the pipeline trigger and streams non-blocking JUnit + Allure telemetry to TestRail, Xray, or Qase.
+      </p>
+
+      <div class="bento-3" style="margin-bottom: 24px;">
+        <div class="card" style="border-top: 3px solid var(--emerald);">
+          <div class="card-title">Pull Request / Push Gate</div>
+          <div class="metric-stat" style="font-size: 24px; margin: 8px 0;">@smoke • 2 Shards</div>
+          <p>Executes against <code>stage</code> or ephemeral PR preview URLs (<code>CUSTOM_URL</code>) in under 90 seconds.</p>
         </div>
-        <div class="card">
-          <h3>What Each Project Owns</h3>
-          <p>Domain Page Objects (<code>src/pages/</code>) • Specs (<code>tests/e2e/</code>) • <code>.env</code> tenant &amp; folder settings</p>
+        <div class="card" style="border-top: 3px solid var(--cyan);">
+          <div class="card-title">Scheduled Nightly Matrix</div>
+          <div class="metric-stat" style="font-size: 24px; margin: 8px 0;">@regression • 4 Shards</div>
+          <p>Runs the complete end-to-end suite across Chromium, Firefox, and WebKit with automatic trace retention on failure.</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--amber);">
+          <div class="card-title">On-Demand Release Dispatch</div>
+          <div class="metric-stat" style="font-size: 24px; margin: 8px 0;">1–8 Configurable Shards</div>
+          <p>Parameterized <code>workflow_dispatch</code> allowing release managers to select tenant, environment, and tag filter.</p>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Slide 12 -->
-  <div class="slide">
-    <div class="eyebrow">SUMMARY</div>
-    <h1>What We Built</h1>
-    <div class="grid-2" style="margin-top:24px;">
-      <ul class="bullet-list">
-        <li>Playwright + TypeScript boilerplate with POM, multi-browser &amp; step reporting</li>
-        <li>3-Tier environment safety (<code>dev</code> write, <code>stage</code> read-only, <code>prod</code> locked to <code>@prod-safe</code>)</li>
-        <li><code>/create-tests</code>: Ticket + PR diff &rarr; TMS case &rarr; Page Object &amp; Spec end-to-end</li>
-        <li><code>/heal-locators</code> + <code>SmartLocatorDiagnostics</code> two-layer selector repair</li>
-      </ul>
-      <ul class="bullet-list">
-        <li>Virtualized table reader, secret masking (<code>fillSecure</code>), and in-memory token borrowing</li>
-        <li>On-demand test data provisioning &amp; LIFO auto-cleanup (<code>EntitySupplyManager</code>)</li>
-        <li>HashiCorp Vault-ready credential abstraction (<code>CredentialProvider</code>)</li>
-        <li>Sharded GitHub Actions pipeline + ESLint zero-flakiness quality gates</li>
-      </ul>
-    </div>
-  </div>
+      <pre><code><span class="tok-cm"># Self-Describing TestOps Run Telemetry (TmsApiClient.formatCiRunName)</span>
+ArgonQA #8849201 • [stage] • @smoke • 2x Shards   &rarr; 100% Passed (38s)
+ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed (2m 14s)</code></pre>
+    </section>
 
-  <!-- Footer Navigation -->
-  <div class="deck-footer">
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill" style="width: 8.33%;"></div>
-    </div>
-    <div class="nav-controls">
-      <button class="nav-btn" id="prevBtn" type="button">&larr;</button>
-      <span class="slide-counter" id="slideCounter">1 / 12</span>
-      <button class="nav-btn" id="nextBtn" type="button">&rarr;</button>
-    </div>
+    <!-- MODULE 07: LIVE CLIENT ROI SIMULATOR & 14-DAY ROADMAP -->
+    <section class="deck-section" data-module="6">
+      <div class="module-kicker">Module 07 // Executive Business Case &amp; Delivery</div>
+      <h2>Interactive Client ROI Calculator &amp; 14-Day Turnkey Delivery</h2>
+      <p class="lead">
+        Adjust the sliders below during your discovery call to model your engineering team's annual hours and budget saved by adopting the ArgonQA™ platform.
+      </p>
+
+      <div class="bento-2">
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 18px;">Live Engineering Savings Simulator</div>
+
+          <div class="roi-control">
+            <label><span>QA / Frontend Engineers Maintaining Tests</span><span id="lblEngineers" style="color:var(--emerald);">4 Engineers</span></label>
+            <input type="range" id="rngEngineers" min="1" max="20" value="4" oninput="recalcRoi()" />
+          </div>
+
+          <div class="roi-control">
+            <label><span>Production Releases per Month</span><span id="lblReleases" style="color:var(--emerald);">8 Releases / mo</span></label>
+            <input type="range" id="rngReleases" min="2" max="40" value="8" oninput="recalcRoi()" />
+          </div>
+
+          <div class="roi-control">
+            <label><span>Hours Spent per Release on Manual Regression &amp; Flaky Fixes</span><span id="lblHours" style="color:var(--emerald);">16 hrs / release</span></label>
+            <input type="range" id="rngHours" min="4" max="60" value="16" oninput="recalcRoi()" />
+          </div>
+
+          <div class="roi-control">
+            <label><span>Blended Engineering Hourly Cost ($ USD)</span><span id="lblRate" style="color:var(--emerald);">$95 / hr</span></label>
+            <input type="range" id="rngRate" min="50" max="180" step="5" value="95" oninput="recalcRoi()" />
+          </div>
+
+          <div style="margin-top: 22px; padding: 18px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.35); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary);">Projected Annual Engineering Savings</div>
+              <div id="roiSavingsUsd" style="font-family: var(--font-mono); font-size: 34px; font-weight: 800; color: var(--emerald);">$116,736 / yr</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 12px; color: var(--text-secondary);">Hours Reclaimed</div>
+              <div id="roiSavingsHrs" style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--cyan);">1,228 hrs / yr</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 18px;">14-Day Turnkey Client Onboarding Roadmap</div>
+          <div class="score-row">
+            <span class="score-badge score-98">Days 1–3</span>
+            <div>
+              <strong>Phase 1: Architecture &amp; Auth Bootstrap</strong>
+              <p>Run <code>/project-setup</code>, wire SSO/MFA storageState caching, configure <code>dev</code>/<code>stage</code>/<code>prod</code> blast-radius guards, and integrate Vault/Doppler secrets.</p>
+            </div>
+          </div>
+          <div class="score-row">
+            <span class="score-badge score-92">Days 4–10</span>
+            <div>
+              <strong>Phase 2: Golden-Path Suite &amp; BasePage Hardening</strong>
+              <p>Automate your top 15–25 revenue-critical user journeys (<code>@smoke</code>, <code>@sanity</code>, <code>@prod-safe</code>) with 100% Page Object encapsulation.</p>
+            </div>
+          </div>
+          <div class="score-row">
+            <span class="score-badge score-85">Days 11–14</span>
+            <div>
+              <strong>Phase 3: Sharded CI/CD &amp; Team Enablement Handover</strong>
+              <p>Deploy trigger-aware GitHub Actions sharding, connect TestRail/Xray/Allure dashboards, and train your engineers on <code>/create-tests</code> &amp; <code>/heal-locators</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- KEYNOTE NAVIGATION DOCK -->
+  <div class="keynote-dock" id="keynoteDock">
+    <button class="dock-btn" onclick="stepModule(-1)" title="Previous Module (Left Arrow)">&larr;</button>
+    <span id="dockCounter" style="font-family: var(--font-mono); font-size: 12px; padding: 0 8px;">01 / 07</span>
+    <button class="dock-btn" onclick="stepModule(1)" title="Next Module (Right Arrow)">&rarr;</button>
   </div>
 
   <script>
-    const slides = document.querySelectorAll('.slide');
-    const counter = document.getElementById('slideCounter');
-    const fill = document.getElementById('progressFill');
-    let current = 0;
+    let currentModule = 0;
+    const sections = document.querySelectorAll('.deck-section');
+    const pills = document.querySelectorAll('.module-pill');
+    const counter = document.getElementById('dockCounter');
 
-    function showSlide(idx) {
-      current = Math.max(0, Math.min(slides.length - 1, idx));
-      slides.forEach((s, i) => s.classList.toggle('active', i === current));
-      counter.textContent = `${current + 1} / ${slides.length}`;
-      fill.style.width = `${((current + 1) / slides.length) * 100}%`;
+    function goToModule(index) {
+      currentModule = (index + sections.length) % sections.length;
+      sections.forEach((sec, i) => sec.classList.toggle('active-module', i === currentModule));
+      pills.forEach((pill, i) => pill.classList.toggle('active', i === currentModule));
+      counter.textContent = `0${currentModule + 1} / 0${sections.length}`;
+      if (!document.body.classList.contains('keynote-mode')) {
+        sections[currentModule].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
-    document.getElementById('prevBtn').addEventListener('click', () => showSlide(current - 1));
-    document.getElementById('nextBtn').addEventListener('click', () => showSlide(current + 1));
+    function stepModule(delta) {
+      goToModule(currentModule + delta);
+    }
+
+    function togglePresentationMode() {
+      const isKeynote = document.body.classList.toggle('keynote-mode');
+      document.getElementById('toggleModeBtn').textContent = isKeynote
+        ? 'Switch to Scroll View'
+        : 'Switch to Keynote Mode';
+      document.getElementById('keynoteDock').style.display = isKeynote ? 'flex' : 'none';
+    }
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') showSlide(current + 1);
-      if (e.key === 'ArrowLeft') showSlide(current - 1);
+      if (!document.body.classList.contains('keynote-mode')) return;
+      if (e.key === 'ArrowRight') stepModule(1);
+      if (e.key === 'ArrowLeft') stepModule(-1);
     });
+
+    const envData = {
+      dev: {
+        title: 'DEV Environment: Full CRUD + LIFO Self-Cleanup',
+        color: 'var(--emerald)',
+        desc: 'On ENV=dev, full regression suites provision fresh records on demand via EntitySupplyManager.findOrProvision() and automatically tear them down in reverse (LIFO) order after the test completes—while strictly blocking any modification to golden baseline IDs in PROTECTED_ENTITY_IDS.',
+        cmd: '$ ENV=dev npx playwright test --project=chromium',
+        code: `test.skip(!isDevRun(), 'Mutating test: runs on dev only');\n\nconst order = await entitySupply.findOrProvision({\n  entityType: 'SubscriptionOrder',\n  findExistingFn: () => api.findDraftOrder(),\n  provisionNewFn: () => api.createDraftOrder(),\n  cleanupFn: (id) => api.deleteDraftOrder(id), // LIFO auto-cleanup\n});`
+      },
+      stage: {
+        title: 'STAGE Environment: Strictly Read-Only Pre-Release Verification',
+        color: 'var(--cyan)',
+        desc: 'On ENV=stage, isDevRun() evaluates to false—automatically skipping any state-mutating test. Even if a developer passes a staging URL via CUSTOM_URL, hostname inspection detects "-stage" or "stage." and enforces read-only mode.',
+        cmd: '$ ENV=stage npx playwright test --grep "@smoke|@sanity"',
+        code: `// Automatically skipped on stage:\ntest.skip(!isDevRun(), 'Mutating test: runs on dev only');\n\n// Allowed on stage: non-destructive assertions & SLA checks\nawait navigationPage.assertInteractionSla('Dashboard Load', 1200, async () => {\n  await navigationPage.navigateTo('/dashboard');\n});`
+      },
+      prod: {
+        title: 'PROD Environment: Locked to @prod-safe Synthetic Monitoring',
+        color: 'var(--amber)',
+        desc: 'When ENV=prod is set, playwright.config.ts enforces a global grep filter for /@prod-safe/ and sets retries to 0. Only explicitly audited, zero-side-effect health checks can execute against production.',
+        cmd: '$ ENV=prod npm run test:prod',
+        code: `// playwright.config.ts global production lock:\nconst isProd = context.environment === 'prod';\nexport default defineConfig({\n  grep: isProd ? /@prod-safe/ : undefined,\n  retries: isProd ? 0 : process.env.CI ? 2 : 1,\n});`
+      }
+    };
+
+    function selectEnvTab(envKey, btn) {
+      document.querySelectorAll('.interactive-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const d = envData[envKey];
+      const titleEl = document.getElementById('envTitle');
+      titleEl.textContent = d.title;
+      titleEl.style.color = d.color;
+      document.getElementById('envDesc').textContent = d.desc;
+      document.getElementById('envCommand').textContent = d.cmd;
+      document.getElementById('envCode').textContent = d.code;
+    }
+
+    function recalcRoi() {
+      const eng = Number(document.getElementById('rngEngineers').value);
+      const rel = Number(document.getElementById('rngReleases').value);
+      const hrs = Number(document.getElementById('rngHours').value);
+      const rate = Number(document.getElementById('rngRate').value);
+
+      document.getElementById('lblEngineers').textContent = `${eng} Engineer${eng > 1 ? 's' : ''}`;
+      document.getElementById('lblReleases').textContent = `${rel} Releases / mo`;
+      document.getElementById('lblHours').textContent = `${hrs} hrs / release`;
+      document.getElementById('lblRate').textContent = `$${rate} / hr`;
+
+      // Conservative 80% reduction in manual regression & locator maintenance overhead
+      const annualManualHours = rel * 12 * hrs * Math.min(eng, 2.5) * 0.5;
+      const savedHours = Math.round(annualManualHours * 0.8);
+      const savedUsd = savedHours * rate;
+
+      document.getElementById('roiSavingsUsd').textContent = `$${savedUsd.toLocaleString()} / yr`;
+      document.getElementById('roiSavingsHrs').textContent = `${savedHours.toLocaleString()} hrs / yr`;
+    }
+    recalcRoi();
   </script>
 </body>
 </html>

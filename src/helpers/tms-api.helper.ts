@@ -1,8 +1,4 @@
-export interface TmsFolder {
-  id: number;
-  name: string;
-  parentId: number | null;
-}
+export type TestOpsProvider = 'testrail' | 'qase' | 'xray' | 'generic';
 
 export interface TmsCaseDraft {
   title: string;
@@ -13,29 +9,31 @@ export interface TmsCaseDraft {
 }
 
 /**
- * Test Management System (Testmo / TestRail) REST Client (`TmsApiClient`)
+ * ArgonQA™ Multi-Provider TestOps REST Bridge (`TmsApiClient`)
  *
- * Used by `/create-tests` and CI reporting jobs to:
- * 1. Resolve or create target folders (`TMS_FOLDER_ID`).
- * 2. Create 1:1 test cases with `ai-generated` and `automated` tags.
- * 3. Format identifiable CI run names (`Run #142 | stage | @smoke | 2 shards`).
+ * Provides a unified API interface across TestRail, Qase, Xray, and generic REST TestOps tools:
+ * 1. Resolves target suite/folder routing (`TMS_FOLDER_ID`).
+ * 2. Provisions 1:1 automated test cases during `/create-tests` workflows.
+ * 3. Formats self-describing CI telemetry run titles (`ArgonQA #142 • [stage] • @smoke • 2x Shards`).
  */
 export class TmsApiClient {
   private readonly baseUrl: string;
   private readonly token: string;
   private readonly projectId: string;
   private readonly defaultFolderId: string;
+  private readonly provider: TestOpsProvider;
 
   constructor() {
-    this.baseUrl = (process.env.TMS_URL ?? 'https://acme.testmo.net').replace(/\/+$/, '');
+    this.baseUrl = (process.env.TMS_URL ?? 'https://testops.example.com').replace(/\/+$/, '');
     this.token = process.env.TMS_TOKEN ?? '';
     this.projectId = process.env.TMS_PROJECT_ID ?? '1';
     this.defaultFolderId = process.env.TMS_FOLDER_ID ?? '1';
+    this.provider = (process.env.TMS_PROVIDER ?? 'generic') as TestOpsProvider;
   }
 
   /**
-   * Builds a standardized, self-describing CI run name so every Test Management run
-   * is immediately identifiable without cross-referencing GitHub Actions logs.
+   * Formats a self-describing CI execution title so engineering leads can identify
+   * environment, tag filter, and shard concurrency at a glance.
    */
   static formatCiRunName(options: {
     runId?: string;
@@ -45,19 +43,19 @@ export class TmsApiClient {
   }): string {
     const runId = options.runId ?? process.env.GITHUB_RUN_ID ?? 'local';
     const env = options.environment ?? process.env.ENV ?? 'dev';
-    const tags = options.tags || process.env.TEST_TAGS || 'all';
+    const tags = options.tags || process.env.TEST_TAGS || 'full-suite';
     const shards = options.shards ?? process.env.SHARDS ?? '1';
-    return `Pipeline ${runId} | ${env} | ${tags} | ${shards} shard(s)`;
+    return `ArgonQA #${runId} • [${env}] • ${tags} • ${shards}x Shards`;
   }
 
   /**
-   * Creates a new test case in the configured TMS folder and returns its case ID.
+   * Provisions a structured test case in the target TestOps suite/folder and returns its assigned ID.
    */
   async createTestCase(draft: TmsCaseDraft, folderId?: string): Promise<{ id: number; title: string }> {
     const targetFolder = folderId ?? this.defaultFolderId;
 
     if (!this.token || this.token === 'replace-with-tms-api-token') {
-      throw new Error('[TmsApiClient] TMS_TOKEN is not configured in .env');
+      throw new Error(`[TmsApiClient:${this.provider}] TMS_TOKEN is not configured in .env`);
     }
 
     const response = await fetch(
@@ -69,14 +67,14 @@ export class TmsApiClient {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          folder_id: Number(targetFolder),
-          name: draft.title,
-          custom_automation_status: draft.isAutomated ? 'Yes' : 'No',
-          tags: draft.tags ?? ['automated', 'ai-generated'],
+          suite_id: Number(targetFolder),
+          title: draft.title,
+          is_automated: draft.isAutomated ?? true,
+          labels: draft.tags ?? ['automated', 'argonqa-verified'],
           steps: [
             {
-              description: draft.stepDescription,
-              expected: draft.expectedResult,
+              action: draft.stepDescription,
+              expected_result: draft.expectedResult,
             },
           ],
         }),
@@ -84,13 +82,13 @@ export class TmsApiClient {
     );
 
     if (!response.ok) {
-      throw new Error(`[TmsApiClient] Failed to create TMS case: HTTP ${response.status}`);
+      throw new Error(`[TmsApiClient:${this.provider}] Failed to provision case: HTTP ${response.status}`);
     }
 
-    const body = (await response.json()) as { result?: { id: number; name: string } };
+    const body = (await response.json()) as { data?: { id: number; title: string } };
     return {
-      id: body.result?.id ?? 0,
-      title: body.result?.name ?? draft.title,
+      id: body.data?.id ?? 0,
+      title: body.data?.title ?? draft.title,
     };
   }
 }

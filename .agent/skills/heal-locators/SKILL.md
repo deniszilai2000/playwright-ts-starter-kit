@@ -15,11 +15,11 @@ Use this skill when a test fails due to a broken or changed DOM selector.
 2. **Inspect the Current DOM**:
    - Open or probe the target route on `dev` to inspect the current DOM tree around the broken element.
 
-3. **Propose Up to 3 Resilient Candidates**:
-   - Rank up to 3 replacement locators using our strict selector hierarchy:
-     1. Dedicated test attribute (`getByTestId` / `getByHook`)
-     2. Accessible role + name (`getByRole`)
-     3. Form label or semantic text (`getByLabel` / `getByText`)
+3. **Propose Up to 3 Scored Candidates (0–100 Stability Score)**:
+   - Rank up to 3 replacement locators using our ArgonQA™ selector hierarchy:
+     1. Dedicated test attribute (`getByTestId` / `getByTestAttr` — Score: 95–98)
+     2. Accessible role + name (`getByRole` — Score: 88–92)
+     3. Form label or semantic text (`getByLabel` / `getByText` — Score: 75–85)
      4. Scoped CSS locator (last resort)
    - Show the user the exact diff proposed for the Page Object in `src/pages/` and wait for confirmation.
 

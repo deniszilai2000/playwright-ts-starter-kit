@@ -1,4 +1,4 @@
-import { Page, Locator, expect, test } from '@playwright/test';
+import { Page, Locator, Response, expect, test } from '@playwright/test';
 
 export interface VirtualizedTableOptions {
   /** Scroll container locator */
@@ -14,13 +14,13 @@ export interface VirtualizedTableOptions {
 }
 
 /**
- * Enterprise BasePage Toolkit
+ * ArgonQA™ Enterprise BasePage Engine
  *
- * House Rules:
- * 1. Spec files NEVER touch raw selectors. All DOM interactions go through Page Objects extending BasePage.
- * 2. Every action is wrapped in `this.step(...)` for structured trace & report visibility.
- * 3. Sensitive fields ALWAYS use `fillSecure()` so secrets never leak into report step logs.
- * 4. Use retrying assertions (`expect.poll`, `toPass`, `toBeVisible`) — never fixed `waitForTimeout` sleeps.
+ * Architectural Guarantees:
+ * 1. Spec files NEVER touch raw selectors. All DOM interactions flow through Page Objects extending BasePage.
+ * 2. Every interaction is wrapped in `this.step(...)` for structured trace & report telemetry.
+ * 3. Sensitive fields ALWAYS use `fillSecure()` so secrets never leak into HTML, JUnit, or Allure step logs.
+ * 4. Built-in API response interception (`interceptApiCall`) and frontend SLA assertions (`assertInteractionSla`).
  */
 export abstract class BasePage {
   readonly page: Page;
@@ -53,10 +53,10 @@ export abstract class BasePage {
   }
 
   /**
-   * Resolves an element by `data-hook` attribute for apps using dedicated automation hook packages.
+   * Resolves an element by a custom QA automation attribute (`data-qa`, `data-cy`, `data-automation-id`).
    */
-  getByHook(hookName: string): Locator {
-    return this.page.locator(`[data-hook="${hookName}"]`);
+  getByTestAttr(attrValue: string, attrName: 'data-qa' | 'data-cy' | 'data-automation-id' = 'data-qa'): Locator {
+    return this.page.locator(`[${attrName}="${attrValue}"]`);
   }
 
   /**
@@ -82,18 +82,18 @@ export abstract class BasePage {
   }
 
   /**
-   * Fills a password or secret input without exposing the secret value in step titles or Allure reports.
+   * Fills a password, API key, or secret input without exposing the plaintext secret in step logs or reports.
    */
   async fillSecure(locator: Locator, secretValue: string, fieldLabel: string = 'password'): Promise<void> {
-    await this.step(`Fill secure field [${fieldLabel}] with ***REDACTED***`, async () => {
+    await this.step(`Fill confidential field [${fieldLabel}] with ***REDACTED***`, async () => {
       await expect(locator).toBeVisible();
       await locator.fill(secretValue);
     });
   }
 
   /**
-   * Retries clicking a trigger element until a target condition (e.g., popover/menu visibility) succeeds.
-   * Prevents flaky failures when UI frameworks swallow clicks during mount or transition frames.
+   * Retries clicking a trigger element until a downstream UI condition (e.g., modal/drawer open) passes.
+   * Eliminates hydration timing flakes on modern React/Next.js/Vue/Angular apps.
    */
   async clickUntil(
     trigger: Locator,
@@ -103,7 +103,7 @@ export abstract class BasePage {
     const timeout = options.timeoutMs ?? 8_000;
     const intervals = options.intervals ?? [250, 500, 1_000];
 
-    await this.step('Click trigger until target state is reached', async () => {
+    await this.step('Click trigger until downstream UI condition is satisfied', async () => {
       await expect(async () => {
         await trigger.click();
         await assertionFn();
@@ -112,9 +112,49 @@ export abstract class BasePage {
   }
 
   /**
-   * Scrolls a bidirectional virtualized table from top to bottom, indexing each row by
-   * `data-index` (or `data-row-index`) so rows unmounted at the top are preserved in order.
-   * Optionally verifies the collected total against a `"Showing N entries"` summary label.
+   * Atomically triggers a UI action while awaiting and asserting a matching backend API response status.
+   */
+  async interceptApiCall(
+    urlPattern: string | RegExp,
+    expectedStatus: number,
+    triggerAction: () => Promise<void>
+  ): Promise<Response> {
+    return this.step(`Intercept API [${String(urlPattern)}] expecting HTTP ${expectedStatus}`, async () => {
+      const responsePromise = this.page.waitForResponse((res) =>
+        typeof urlPattern === 'string'
+          ? res.url().includes(urlPattern)
+          : urlPattern.test(res.url())
+      );
+      await triggerAction();
+      const response = await responsePromise;
+      expect(response.status()).toBe(expectedStatus);
+      return response;
+    });
+  }
+
+  /**
+   * Measures the wall-clock duration of a user interaction and asserts it completes within an SLA budget (ms).
+   */
+  async assertInteractionSla(
+    interactionName: string,
+    maxBudgetMs: number,
+    actionFn: () => Promise<void>
+  ): Promise<number> {
+    return this.step(`SLA Check: "${interactionName}" <= ${maxBudgetMs}ms`, async () => {
+      const start = performance.now();
+      await actionFn();
+      const elapsedMs = Math.round(performance.now() - start);
+      expect(
+        elapsedMs,
+        `Interaction "${interactionName}" took ${elapsedMs}ms, exceeding SLA budget of ${maxBudgetMs}ms`
+      ).toBeLessThanOrEqual(maxBudgetMs);
+      return elapsedMs;
+    });
+  }
+
+  /**
+   * Scrolls a virtualized data grid (TanStack Virtual, AG Grid, MUI DataGrid) from top to bottom,
+   * indexing each row by `data-index` or `data-row-index` so recycled DOM nodes are captured without duplicates.
    */
   async readAllVirtualizedRows(options: VirtualizedTableOptions): Promise<string[][]> {
     const {
@@ -125,10 +165,9 @@ export abstract class BasePage {
       maxIterations = 150,
     } = options;
 
-    return this.step('Read all rows from virtualized table', async () => {
+    return this.step('Extract all rows from virtualized data grid', async () => {
       await expect(scrollContainer).toBeVisible();
 
-      // Scroll to top first
       await scrollContainer.evaluate((el) => {
         el.scrollTop = 0;
       });
@@ -171,7 +210,7 @@ export abstract class BasePage {
 
       if (totalCountLocator && (await totalCountLocator.isVisible())) {
         const summaryText = await totalCountLocator.innerText();
-        const match = summaryText.match(/(\d+)\s+entries/i);
+        const match = summaryText.match(/(\d+)\s+(?:entries|results|items|rows)/i);
         if (match) {
           const expectedTotal = Number.parseInt(match[1], 10);
           expect(sortedRows.length).toBe(expectedTotal);
@@ -183,20 +222,19 @@ export abstract class BasePage {
   }
 
   /**
-   * Removes a quick-filter chip regardless of whether the UI language is set to English ("Remove")
-   * or Spanish ("Quitar").
+   * Dismisses an active filter pill or tag chip using accessible button roles.
    */
-  async removeFilterChip(chipContainer: Locator): Promise<void> {
-    await this.step('Remove active filter chip (EN/ES aware)', async () => {
-      const removeButton = chipContainer.getByRole('button', { name: /^(Remove|Quitar|Clear)$/i });
+  async dismissFilterChip(chipContainer: Locator, labelPattern: RegExp = /^(Remove|Clear|Delete|Dismiss)$/i): Promise<void> {
+    await this.step('Dismiss active filter chip', async () => {
+      const removeButton = chipContainer.getByRole('button', { name: labelPattern });
       await expect(removeButton).toBeVisible();
       await removeButton.click();
     });
   }
 
   /**
-   * Navigates a calendar popover to the target month/year by inspecting the actual rendered
-   * header text rather than assuming which month the date picker opens on.
+   * Navigates an ARIA calendar popover to the target month/year by inspecting the live header text
+   * rather than assuming which default month the date picker opens on.
    */
   async pickCalendarDate(
     calendarPopover: Locator,
@@ -220,14 +258,16 @@ export abstract class BasePage {
     ];
     const targetHeaderLabel = `${monthNames[targetMonthIndexZeroBased]} ${targetYear}`;
 
-    await this.step(`Pick calendar date: ${targetDay} ${targetHeaderLabel}`, async () => {
+    await this.step(`Select calendar date: ${targetDay} ${targetHeaderLabel}`, async () => {
       await expect(calendarPopover).toBeVisible();
-      const headerLocator = calendarPopover.locator('[data-hook="calendar-header"], .react-datepicker__current-month');
-      const nextBtn = calendarPopover.getByRole('button', { name: /next|siguiente/i });
-      const prevBtn = calendarPopover.getByRole('button', { name: /prev|previous|anterior/i });
+      const headerLocator = calendarPopover.locator(
+        '[data-testid="calendar-header"], [role="heading"], .rdp-caption_label, .react-datepicker__current-month'
+      );
+      const nextBtn = calendarPopover.getByRole('button', { name: /next/i });
+      const prevBtn = calendarPopover.getByRole('button', { name: /prev|previous/i });
 
       for (let guard = 0; guard < 36; guard++) {
-        const currentHeaderText = (await headerLocator.innerText()).trim();
+        const currentHeaderText = (await headerLocator.first().innerText()).trim();
         if (currentHeaderText.toLowerCase().includes(targetHeaderLabel.toLowerCase())) {
           break;
         }

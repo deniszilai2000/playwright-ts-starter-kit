@@ -24,8 +24,8 @@ This repository is an enterprise-grade Playwright + TypeScript E2E automation su
 1. **Zero Selectors in Spec Files**:
    - Specs (`tests/e2e/**/*.spec.ts`) never call `page.locator()`, `page.getByRole()`, or `page.getByTestId()` directly.
    - All selectors and interactions belong in Page Objects (`src/pages/**/*.page.ts`) extending `BasePage` and injected via `src/fixtures/base.fixture.ts`.
-2. **Locator Priority**:
-   - `getByTestId()` / `getByHook()` (`data-test`, `data-testid`, `data-hook`) $\rightarrow$ `getByRole()` $\rightarrow$ `getByLabel()` $\rightarrow$ visible text fallback.
+2. **Locator Priority (ArgonQA™ Stability Score 0–100)**:
+   - `getByTestId()` / `getByTestAttr()` (`data-test`, `data-testid`, `data-qa`, `data-cy`) $\rightarrow$ `getByRole()` $\rightarrow$ `getByLabel()` $\rightarrow$ visible text fallback.
 3. **One TMS Step = One Playwright Test**:
    - Prefix test titles with the step number from the Test Management System case, e.g.:
      `test('1 — application shell loads and renders expected document title @prod-safe', ...)`

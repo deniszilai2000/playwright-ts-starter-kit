@@ -1,22 +1,20 @@
 import { Page, Locator } from '@playwright/test';
 
 export interface LocatorCandidate {
-  strategy: 'testId' | 'role' | 'label' | 'text' | 'css';
+  strategy: 'testId' | 'testAttr' | 'role' | 'label' | 'text';
   expression: string;
-  confidence: number;
+  /** ArgonQA™ 0–100 Selector Stability Score based on semantic resilience */
+  stabilityScore: number;
 }
 
 /**
- * Two-Layer Locator Healing Helper (`SmartLocatorDiagnostics`)
+ * ArgonQA™ DOM Resilience & Stability Scoring Engine (`SmartLocatorDiagnostics`)
  *
- * Layer 1 (Runtime Diagnostic — Zero File Mutation):
- *   When a selector fails during a test run, scans the live page's accessibility and DOM attributes
- *   and logs up to 3 ranked replacement candidates (`ARIA role -> testId/hook -> label/text -> CSS`)
- *   directly to the console and test attachment.
- *
- * Layer 2 (Interactive Patching via `/heal-locators`):
- *   Reads the diagnostic log + `test-results/`, confirms the best candidate with the engineer,
- *   patches the Page Object in `src/pages/`, and re-runs the spec.
+ * Computes a deterministic 0–100 Stability Score for candidate selectors when a UI change breaks a locator:
+ * - Stage 1 (Non-Mutating Runtime Telemetry): Scans the live DOM accessibility tree on failure and logs
+ *   the top 3 scored replacement selectors without modifying files in CI.
+ * - Stage 2 (Agentic Repair via `/heal-locators`): Gemini 4 Argon presents the scored candidates,
+ *   patches the Page Object in `src/pages/` upon approval, and re-verifies the spec.
  */
 export class SmartLocatorDiagnostics {
   static async suggestCandidatesOnFailure(
@@ -31,52 +29,63 @@ export class SmartLocatorDiagnostics {
         const matches: Array<{ strategy: string; expr: string; score: number }> = [];
 
         const elements = Array.from(
-          document.querySelectorAll('button, a, input, select, textarea, [data-test], [data-testid], [data-hook], [role]')
+          document.querySelectorAll(
+            'button, a, input, select, textarea, [data-test], [data-testid], [data-qa], [data-cy], [role]'
+          )
         );
 
         for (const el of elements.slice(0, 200)) {
-          const hook = el.getAttribute('data-hook');
           const testId = el.getAttribute('data-test') || el.getAttribute('data-testid');
+          const qaAttr = el.getAttribute('data-qa') || el.getAttribute('data-cy');
           const role = el.getAttribute('role') || el.tagName.toLowerCase();
           const text = (el.textContent || '').trim().slice(0, 50);
           const ariaLabel = el.getAttribute('aria-label') || '';
 
-          const combined = `${hook ?? ''} ${testId ?? ''} ${text} ${ariaLabel}`.toLowerCase();
+          const combined = `${testId ?? ''} ${qaAttr ?? ''} ${text} ${ariaLabel}`.toLowerCase();
           if (!lower || combined.includes(lower)) {
-            if (hook) {
-              matches.push({ strategy: 'testId', expr: `this.getByHook('${hook}')`, score: 0.98 });
-            } else if (testId) {
-              matches.push({ strategy: 'testId', expr: `this.getByTestId('${testId}')`, score: 0.96 });
+            if (testId) {
+              matches.push({ strategy: 'testId', expr: `this.getByTestId('${testId}')`, score: 98 });
+            } else if (qaAttr) {
+              matches.push({ strategy: 'testAttr', expr: `this.getByTestAttr('${qaAttr}')`, score: 95 });
+            } else if (ariaLabel && (role === 'button' || role === 'a' || role === 'input')) {
+              const mappedRole = role === 'a' ? 'link' : role === 'input' ? 'textbox' : 'button';
+              matches.push({
+                strategy: 'role',
+                expr: `this.page.getByRole('${mappedRole}', { name: '${ariaLabel}' })`,
+                score: 92,
+              });
             } else if (text && (role === 'button' || role === 'a')) {
               const mappedRole = role === 'a' ? 'link' : 'button';
               matches.push({
                 strategy: 'role',
                 expr: `this.page.getByRole('${mappedRole}', { name: '${text}' })`,
-                score: 0.9,
+                score: 88,
               });
             }
           }
         }
-        return matches.slice(0, 3);
+        return matches.sort((a, b) => b.score - a.score).slice(0, 3);
       }, failedDescription);
 
       for (const item of snapshot) {
         candidates.push({
           strategy: item.strategy as LocatorCandidate['strategy'],
           expression: item.expr,
-          confidence: item.score,
+          stabilityScore: item.score,
         });
       }
 
       if (candidates.length > 0) {
         console.warn(
-          `\n[SmartLocator] Selector failed for "${failedDescription}". Top candidates:\n` +
-            candidates.map((c, idx) => `  ${idx + 1}. ${c.expression} (confidence: ${c.confidence})`).join('\n') +
-            `\nRun /heal-locators in Antigravity to apply the fix interactively.\n`
+          `\n[ArgonQA Resilience Engine] Selector mismatch for "${failedDescription}". Scored replacements:\n` +
+            candidates
+              .map((c, idx) => `  ${idx + 1}. ${c.expression} [Stability Score: ${c.stabilityScore}/100]`)
+              .join('\n') +
+            `\nInvoke /heal-locators in Antigravity to apply the verified patch.\n`
         );
       }
     } catch {
-      // Page may already be closed
+      // Browser context already closed
     }
 
     return candidates;

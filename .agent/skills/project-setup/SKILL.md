@@ -14,10 +14,10 @@ Use this skill immediately after cloning or forking this repository for a new cl
    - **Project / Product Name** (e.g., `acme-order-portal-e2e`)
    - **Tenant Identifier(s)** (e.g., `acme`, `globex`)
    - **Base URL Pattern** for `dev`, `stage`, and `prod` (e.g., `https://app-{tenant}-{env}.clientdomain.com`)
-   - **Primary Test Attribute** (`data-test`, `data-testid`, or `data-hook`)
+   - **Primary Test Attribute** (`data-test`, `data-testid`, `data-qa`, or `data-cy`)
    - **Default Timezone** (e.g., `America/New_York`, `Europe/London`)
    - **GitHub Repository URL** (e.g., `https://github.com/deniszilai2000/<repo-name>`)
-   - **Test Management System** (`Testmo`, `TestRail`, `Xray`, or `None`)
+   - **TestOps Platform** (`TestRail`, `Xray`, `Qase`, `Zephyr`, or `None`)
 
 2. **Confirm Summary**:
    Present a clean summary table of the proposed configuration and wait for user approval before editing files.

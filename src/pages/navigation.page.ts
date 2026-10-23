@@ -2,10 +2,10 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 /**
- * Global Application Shell & Navigation Page Object (`NavigationPage`)
+ * ArgonQA™ Application Shell & Navigation Page Object (`NavigationPage`)
  *
- * Encapsulates the application header, sidebar navigation, user avatar menu,
- * theme toggle, and global layout assertions.
+ * Encapsulates the application header, sidebar navigation, user profile menu,
+ * and global layout assertions.
  */
 export class NavigationPage extends BasePage {
   private readonly sidebarNav: Locator;
@@ -14,10 +14,10 @@ export class NavigationPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.sidebarNav = this.getByHook('app-sidebar').or(this.page.getByRole('navigation'));
-    this.userAvatarMenu = this.getByHook('user-avatar-menu').or(this.getByTestId('user-menu'));
-    this.signOutButton = this.getByHook('sign-out-button').or(
-      this.page.getByRole('menuitem', { name: /sign out|log out|cerrar sesión/i })
+    this.sidebarNav = this.getByTestId('app-sidebar').or(this.page.getByRole('navigation'));
+    this.userAvatarMenu = this.getByTestId('user-avatar-menu').or(this.getByTestAttr('user-menu'));
+    this.signOutButton = this.getByTestId('sign-out-button').or(
+      this.page.getByRole('menuitem', { name: /sign out|log out/i })
     );
   }
 
@@ -35,7 +35,7 @@ export class NavigationPage extends BasePage {
   }
 
   async signOut(): Promise<void> {
-    await this.step('Sign out via user avatar menu', async () => {
+    await this.step('Sign out via user profile menu', async () => {
       await this.clickElement(this.userAvatarMenu, 'User Avatar Menu');
       await this.clickElement(this.signOutButton, 'Sign Out Button');
     });

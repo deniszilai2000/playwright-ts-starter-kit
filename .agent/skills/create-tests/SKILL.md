@@ -16,7 +16,7 @@ Use this skill to turn a feature ticket or user story into production-ready Page
 2. **Explore Target Page on `dev`**:
    - Resolve the target `dev` or `CUSTOM_URL` environment.
    - Inspect the live page DOM / accessibility structure (or use a temporary scratch probe under `tests/e2e/zz-probe.spec.ts` and remove it immediately after inspection).
-   - Identify stable attributes (`data-test`, `data-testid`, `data-hook`, ARIA roles).
+   - Identify stable attributes (`data-test`, `data-testid`, `data-qa`, `data-cy`, ARIA roles).
 
 3. **Propose Test Cases for Approval**:
    - Propose a structured list of test steps covering:

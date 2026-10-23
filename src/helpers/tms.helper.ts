@@ -1,21 +1,42 @@
 import { test } from '@playwright/test';
 
+export interface TmsCaseMetadata {
+  severity?: 'blocker' | 'critical' | 'normal' | 'minor';
+  feature?: string;
+}
+
 /**
- * Links a Playwright test to a Test Management System (Testmo / TestRail / Xray) case ID.
- * Adds both a structured annotation and a clickable URL in HTML / Allure / JUnit reports.
+ * ArgonQA™ Multi-Provider TestOps Traceability Linker (`tmsCase`)
  *
- * House convention:
- *   One TMS step = One Playwright test (e.g., `"1 — user can filter active orders by status"`).
- *   Multiple tests in the same describe block can link to the same parent `tmsCase(id)`.
+ * Connects every Playwright test step to your client's Test Management platform
+ * (TestRail, Xray, Qase, Zephyr Scale, or Linear) and embeds clickable links
+ * inside Playwright HTML, JUnit XML, and Allure reports.
  */
-export async function tmsCase(caseId: number | string): Promise<void> {
-  const cleanId = String(caseId).replace(/^C/i, '');
-  const tmsBaseUrl = (process.env.TMS_URL ?? 'https://acme.testmo.net').replace(/\/+$/, '');
-  const projectId = process.env.TMS_PROJECT_ID ?? '1';
-  const caseUrl = `${tmsBaseUrl}/repositories/${projectId}?case_id=${cleanId}`;
+export async function tmsCase(
+  caseId: number | string,
+  metadata?: TmsCaseMetadata
+): Promise<void> {
+  const normalizedId = String(caseId).replace(/^(TC-|C)/i, '');
+  const baseUrl = (process.env.TMS_URL ?? 'https://testops.example.com').replace(/\/+$/, '');
+  const projectId = process.env.TMS_PROJECT_ID ?? 'PRJ';
+  const caseUrl = `${baseUrl}/projects/${projectId}/cases/${normalizedId}`;
 
   test.info().annotations.push({
     type: 'tms_case',
-    description: `C${cleanId} (${caseUrl})`,
+    description: `TC-${normalizedId} (${caseUrl})`,
   });
+
+  if (metadata?.severity) {
+    test.info().annotations.push({
+      type: 'severity',
+      description: metadata.severity,
+    });
+  }
+
+  if (metadata?.feature) {
+    test.info().annotations.push({
+      type: 'feature',
+      description: metadata.feature,
+    });
+  }
 }
