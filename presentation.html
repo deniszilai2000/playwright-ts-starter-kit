@@ -1,30 +1,75 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>ArgonQA™ — Deterministic Playwright + Gemini 4 Argon Architecture Deck</title>
+  <title>ArgonQA — Enterprise Playwright + TypeScript Architecture Briefing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg-void: #05080f;
-      --bg-panel: #0b111e;
-      --bg-card: #111a2e;
-      --bg-elevated: #17233d;
-      --border: rgba(148, 163, 184, 0.14);
-      --border-glow: rgba(16, 185, 129, 0.45);
-      --text-main: #f8fafc;
-      --text-secondary: #94a3b8;
+    :root[data-theme="light"] {
+      --bg-page: #f8fafc;
+      --bg-sheet: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-main: #0f172a;
+      --text-secondary: #334155;
       --text-muted: #64748b;
-      --emerald: #10b981;
-      --cyan: #06b6d4;
-      --amber: #f59e0b;
-      --rose: #f43f5e;
-      --indigo: #6366f1;
+      --accent: #1d4ed8;
+      --accent-soft: #eff6ff;
+      --accent-border: #bfdbfe;
+      --positive: #15803d;
+      --positive-soft: #f0fdf4;
+      --positive-border: #bbf7d0;
+      --warning: #b45309;
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      --danger: #b91c1c;
+      --danger-soft: #fef2f2;
+      --danger-border: #fecaca;
+      --header-bg: rgba(255, 255, 255, 0.92);
+      --shadow-sheet: 0 1px 3px rgba(15, 23, 42, 0.04), 0 12px 32px -4px rgba(15, 23, 42, 0.05);
+      --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+      --inline-code-bg: #f1f5f9;
+      --inline-code-text: #0f172a;
+    }
+
+    :root[data-theme="dark"] {
+      --bg-page: #0c0d10;
+      --bg-sheet: #14161b;
+      --bg-subtle: #1c1f26;
+      --bg-card: #181b22;
+      --border: #262932;
+      --border-strong: #363a47;
+      --text-main: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --accent-border: rgba(59, 130, 246, 0.3);
+      --positive: #22c55e;
+      --positive-soft: rgba(34, 197, 94, 0.12);
+      --positive-border: rgba(34, 197, 94, 0.3);
+      --warning: #f59e0b;
+      --warning-soft: rgba(245, 158, 11, 0.12);
+      --warning-border: rgba(245, 158, 11, 0.3);
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.12);
+      --danger-border: rgba(239, 68, 68, 0.3);
+      --header-bg: rgba(20, 22, 27, 0.92);
+      --shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-card: none;
+      --inline-code-bg: #222630;
+      --inline-code-text: #e2e8f0;
+    }
+
+    :root {
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, monospace;
+      --font-serif: 'Newsreader', Georgia, serif;
+      --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
     }
 
     * {
@@ -34,21 +79,17 @@
     }
 
     body {
-      background-color: var(--bg-void);
-      background-image:
-        radial-gradient(circle at 12% 15%, rgba(16, 185, 129, 0.09), transparent 32%),
-        radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.09), transparent 35%),
-        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      background-color: var(--bg-page);
       color: var(--text-main);
       font-family: var(--font-sans);
       line-height: 1.6;
       min-height: 100vh;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Top Proprietary Command Header */
+    /* Top Executive Header */
     .command-bar {
       position: sticky;
       top: 0;
@@ -57,9 +98,10 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 14px 32px;
-      background: rgba(5, 8, 15, 0.88);
-      backdrop-filter: blur(16px);
+      padding: 12px 32px;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
 
@@ -70,100 +112,111 @@
     }
 
     .brand-mark {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      background: linear-gradient(135deg, var(--emerald), var(--cyan));
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background: var(--text-main);
+      color: var(--bg-sheet);
       display: grid;
       place-items: center;
       font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 15px;
-      color: #03120e;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: -0.03em;
     }
 
     .brand-title {
-      font-weight: 800;
-      font-size: 16px;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.015em;
+      color: var(--text-main);
     }
 
     .brand-title span {
-      color: var(--emerald);
-      font-family: var(--font-mono);
+      color: var(--text-muted);
+      font-weight: 500;
       font-size: 12px;
       margin-left: 8px;
-      padding: 2px 8px;
-      border-radius: 99px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding-left: 10px;
+      border-left: 1px solid var(--border-strong);
     }
 
     .module-pills {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: wrap;
     }
 
     .module-pill {
-      background: rgba(17, 26, 46, 0.75);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 11px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
 
-    .module-pill:hover,
-    .module-pill.active {
+    .module-pill:hover {
       color: var(--text-main);
-      border-color: var(--emerald);
-      background: rgba(16, 185, 129, 0.14);
+      background: var(--bg-subtle);
+    }
+
+    .module-pill.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+      font-weight: 600;
     }
 
     .mode-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-action {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 7px 14px;
-      border-radius: 8px;
+      background: var(--bg-sheet);
+      border: 1px solid var(--border-strong);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 6px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       text-decoration: none;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
     }
 
     .btn-action:hover {
-      border-color: var(--cyan);
-      background: rgba(6, 182, 212, 0.12);
+      color: var(--text-main);
+      border-color: var(--text-muted);
+      background: var(--bg-subtle);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--emerald), var(--cyan));
-      color: #04130f;
-      border: none;
-      font-weight: 700;
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #1e40af;
+      color: #ffffff;
+      border-color: #1e40af;
     }
 
     /* Main Container */
     .deck-container {
-      max-width: 1320px;
+      max-width: 1220px;
       margin: 0 auto;
-      padding: 36px 28px 96px;
+      padding: 36px 24px 96px;
     }
 
-    /* Keynote Single-Module Mode vs Scroll Mode */
+    /* Keynote Single-Slide Mode vs Scroll Mode */
     body.keynote-mode .deck-section {
       display: none;
       min-height: calc(100vh - 150px);
@@ -171,81 +224,68 @@
     }
     body.keynote-mode .deck-section.active-module {
       display: block;
-      animation: fadeSlide 0.28s ease-out;
+      animation: fadeSlide 0.2s ease-out;
     }
 
     @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .deck-section {
-      margin-bottom: 64px;
-      background: rgba(11, 17, 30, 0.82);
+      margin-bottom: 48px;
+      background: var(--bg-sheet);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 40px;
+      border-radius: 12px;
+      padding: 44px 48px;
       position: relative;
-      overflow: hidden;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-    }
-
-    .deck-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--emerald), var(--cyan), transparent);
+      box-shadow: var(--shadow-sheet);
     }
 
     .module-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      display: inline-block;
       font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--emerald);
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.28);
-      padding: 4px 12px;
-      border-radius: 99px;
-      margin-bottom: 14px;
+      color: var(--accent);
+      margin-bottom: 12px;
     }
 
     h1 {
-      font-size: clamp(32px, 4vw, 50px);
-      font-weight: 800;
+      font-size: clamp(28px, 3.6vw, 44px);
+      font-weight: 700;
       letter-spacing: -0.03em;
-      line-height: 1.12;
+      line-height: 1.15;
       margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    h1 em, h2 em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--accent);
     }
 
     h2 {
-      font-size: clamp(24px, 2.6vw, 34px);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 10px;
+      font-size: clamp(22px, 2.5vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
+      color: var(--text-main);
     }
 
     .lead {
-      font-size: 17px;
+      font-size: 16.5px;
       color: var(--text-secondary);
-      max-width: 840px;
-      margin-bottom: 28px;
+      max-width: 820px;
+      margin-bottom: 32px;
+      line-height: 1.65;
     }
 
-    .gradient-text {
-      background: linear-gradient(90deg, #34d399, #22d3ee);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    /* Bento Grids */
+    /* Editorial Grids */
     .bento-3 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
@@ -265,131 +305,149 @@
     }
 
     .card {
-      background: linear-gradient(180deg, rgba(23, 35, 61, 0.72) 0%, rgba(17, 26, 46, 0.92) 100%);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 10px;
       padding: 24px;
       min-width: 0;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 28px rgba(0, 0, 0, 0.28);
-      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+      box-shadow: var(--shadow-card);
     }
 
-    .card:hover {
-      border-color: rgba(16, 185, 129, 0.45);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 36px rgba(6, 182, 212, 0.12);
-      transform: translateY(-2px);
+    .card-subtle {
+      background: var(--bg-subtle);
     }
 
     .card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .card-title {
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 15.5px;
+      font-weight: 600;
       color: var(--text-main);
+      margin-bottom: 6px;
     }
 
     .card p {
       font-size: 14px;
       color: var(--text-secondary);
+      line-height: 1.6;
     }
 
     .metric-stat {
-      font-family: var(--font-mono);
-      font-size: 30px;
-      font-weight: 800;
-      color: var(--emerald);
+      font-family: var(--font-sans);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
       margin-bottom: 4px;
     }
 
-    /* Code Terminal */
+    .metric-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    /* Code Terminal (Always Dark Slate for Readability) */
     pre {
-      background: #060a12;
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      border-radius: 12px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
       padding: 18px 20px;
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 12.5px;
       line-height: 1.65;
-      color: #e2e8f0;
+      color: #f1f5f9;
       overflow-x: auto;
     }
 
     code {
       font-family: var(--font-mono);
-      font-size: 12.5px;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.1);
+      font-size: 12px;
+      color: var(--inline-code-text);
+      background: var(--inline-code-bg);
       padding: 2px 6px;
-      border-radius: 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
     }
 
     pre code {
       background: transparent;
       padding: 0;
       color: inherit;
+      border: none;
     }
 
-    .tok-kw { color: #f472b6; }
-    .tok-fn { color: #34d399; }
-    .tok-str { color: #fbbf24; }
+    .tok-kw { color: #93c5fd; }
+    .tok-fn { color: #6ee7b7; }
+    .tok-str { color: #fde68a; }
     .tok-cm { color: #64748b; font-style: italic; }
 
     /* Interactive Tabs inside Modules */
     .interactive-tabs {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 18px;
       flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
     }
 
     .tab-btn {
-      background: var(--bg-card);
+      background: var(--bg-subtle);
       border: 1px solid var(--border);
       color: var(--text-secondary);
-      padding: 9px 16px;
-      border-radius: 10px;
+      padding: 8px 16px;
+      border-radius: 6px;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .tab-btn.active {
-      background: rgba(16, 185, 129, 0.15);
-      border-color: var(--emerald);
-      color: var(--emerald);
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
     }
 
-    /* Stability Score Meter */
+    /* Stability Score Rows */
     .score-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 14px;
-      padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.02);
+      padding: 14px 16px;
+      background: var(--bg-subtle);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       margin-bottom: 10px;
     }
 
     .score-badge {
       font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 14px;
+      font-weight: 600;
+      font-size: 12px;
       padding: 4px 10px;
-      border-radius: 8px;
-      min-width: 74px;
+      border-radius: 6px;
+      min-width: 76px;
       text-align: center;
+      flex-shrink: 0;
     }
 
-    .score-98 { background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
-    .score-92 { background: rgba(6, 182, 212, 0.18); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4); }
-    .score-85 { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .score-98 { background: var(--positive-soft); color: var(--positive); border: 1px solid var(--positive-border); }
+    .score-92 { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-border); }
+    .score-85 { background: var(--warning-soft); color: var(--warning); border: 1px solid var(--warning-border); }
 
     /* ROI Simulator Sliders */
     .roi-control {
@@ -399,13 +457,13 @@
       display: flex;
       justify-content: space-between;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 500;
       margin-bottom: 6px;
       color: var(--text-secondary);
     }
     .roi-control input[type="range"] {
       width: 100%;
-      accent-color: var(--emerald);
+      accent-color: var(--accent);
       cursor: pointer;
     }
 
@@ -418,27 +476,46 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(11, 17, 30, 0.92);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
+      background: var(--bg-sheet);
+      border: 1px solid var(--border-strong);
+      padding: 6px 12px;
       border-radius: 99px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
     }
 
     .dock-btn {
-      background: var(--bg-card);
+      background: var(--bg-subtle);
       border: 1px solid var(--border);
       color: var(--text-main);
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 600;
     }
     .dock-btn:hover {
-      border-color: var(--emerald);
-      color: var(--emerald);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Lists inside comparison cards */
+    .clean-list {
+      list-style: none;
+      margin-top: 8px;
+    }
+    .clean-list li {
+      position: relative;
+      padding-left: 18px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .clean-list li::before {
+      content: "•";
+      position: absolute;
+      left: 2px;
+      color: var(--text-muted);
+      font-weight: bold;
     }
 
     /* Responsive Mobile & Tablet Optimization */
@@ -478,19 +555,19 @@
         font-size: 11px;
       }
       .deck-container {
-        padding: 18px 12px 92px;
+        padding: 16px 12px 92px;
       }
       .deck-section {
-        padding: 22px 16px;
-        border-radius: 16px;
-        margin-bottom: 28px;
+        padding: 24px 18px;
+        border-radius: 10px;
+        margin-bottom: 24px;
       }
       h1 {
-        font-size: clamp(24px, 7vw, 32px);
-        line-height: 1.18;
+        font-size: clamp(23px, 6.5vw, 30px);
+        line-height: 1.2;
       }
       h2 {
-        font-size: clamp(20px, 5.8vw, 26px);
+        font-size: clamp(19px, 5.5vw, 24px);
       }
       .lead {
         font-size: 14.5px;
@@ -500,7 +577,7 @@
         padding: 18px 16px;
       }
       .metric-stat {
-        font-size: 24px;
+        font-size: 22px;
       }
       pre {
         padding: 14px;
@@ -520,178 +597,185 @@
         right: auto;
         transform: translateX(-50%);
         bottom: 14px;
-        padding: 8px 16px;
+        padding: 6px 14px;
       }
     }
   </style>
 </head>
 <body class="keynote-mode">
 
-  <!-- TOP PROPRIETARY COMMAND HEADER -->
+  <!-- TOP EXECUTIVE HEADER -->
   <header class="command-bar">
     <div class="brand-cluster">
       <div class="brand-mark">AQ</div>
       <div class="brand-title">
-        ArgonQA™ <span>GEMINI 4 ARGON + PLAYWRIGHT TS</span>
+        ArgonQA <span>Enterprise Playwright + TypeScript Architecture</span>
       </div>
     </div>
 
     <nav class="module-pills" id="moduleNav">
-      <button class="module-pill active" onclick="goToModule(0)">01 • Executive Thesis</button>
-      <button class="module-pill" onclick="goToModule(1)">02 • 4-Layer Architecture</button>
-      <button class="module-pill" onclick="goToModule(2)">03 • Blast-Radius Safety</button>
-      <button class="module-pill" onclick="goToModule(3)">04 • Agentic Workflows</button>
-      <button class="module-pill" onclick="goToModule(4)">05 • Enterprise Hardening</button>
-      <button class="module-pill" onclick="goToModule(5)">06 • Sharded CI & TestOps</button>
-      <button class="module-pill" onclick="goToModule(6)">07 • Live ROI & 14-Day Delivery</button>
+      <button class="module-pill active" onclick="goToModule(0)">1. Executive Summary</button>
+      <button class="module-pill" onclick="goToModule(1)">2. System Architecture</button>
+      <button class="module-pill" onclick="goToModule(2)">3. Environment Governance</button>
+      <button class="module-pill" onclick="goToModule(3)">4. Authoring &amp; Maintenance</button>
+      <button class="module-pill" onclick="goToModule(4)">5. Enterprise Utilities</button>
+      <button class="module-pill" onclick="goToModule(5)">6. CI/CD &amp; Telemetry</button>
+      <button class="module-pill" onclick="goToModule(6)">7. ROI &amp; Rollout Plan</button>
     </nav>
 
     <div class="mode-actions">
-      <button class="btn-action" id="toggleModeBtn" onclick="togglePresentationMode()">Switch to Scroll View</button>
-      <a class="btn-action btn-primary" href="./ARCHITECTURE_GUIDE.html">Technical Blueprint &rarr;</a>
+      <button class="btn-action" id="themeBtn" onclick="toggleTheme()">Dark Theme</button>
+      <button class="btn-action" id="toggleModeBtn" onclick="togglePresentationMode()">Scroll View</button>
+      <a class="btn-action btn-primary" href="./ARCHITECTURE_GUIDE.html">Technical Docs &rarr;</a>
     </div>
   </header>
 
   <main class="deck-container">
 
-    <!-- MODULE 01: EXECUTIVE THESIS -->
+    <!-- SECTION 01: EXECUTIVE THESIS -->
     <section class="deck-section active-module" data-module="0">
-      <div class="module-kicker">Module 01 // Proprietary Engineering Paradigm</div>
-      <h1>AI Speed at Build Time.<br /><span class="gradient-text">Zero AI Flakiness at Runtime.</span></h1>
+      <div class="module-kicker">Section 01 — Architectural Overview</div>
+      <h1>AI-Assisted Speed at Build Time.<br /><em>Deterministic Reliability</em> in Production CI.</h1>
       <p class="lead">
-        Most "AI testing tools" inject LLM calls into CI test execution—causing slow pipelines, non-deterministic pass/fail flips, and leaked credentials. <strong>ArgonQA™</strong> separates <strong>Agentic Authoring (Google Antigravity / Gemini 4 Argon)</strong> from <strong>Deterministic Execution (Strict Playwright + TypeScript)</strong>.
+        Many testing tools inject LLM calls directly into CI test execution—introducing latency, non-deterministic pass/fail flips, and security compliance risks. <strong>ArgonQA</strong> separates <strong>assisted test authoring</strong> (in the engineer's IDE) from <strong>strictly typed, deterministic Playwright execution</strong> in your CI pipeline.
       </p>
 
       <div class="bento-4" style="margin-bottom: 28px;">
-        <div class="card">
-          <div class="metric-stat">0 LLM Calls</div>
-          <div class="card-title">During CI Execution</div>
-          <p>100% deterministic TypeScript in GitHub Actions, GitLab CI, or Azure DevOps. Zero token cost per test run.</p>
+        <div class="card card-subtle">
+          <span class="metric-tag">CI Execution</span>
+          <div class="metric-stat">Zero LLM Calls</div>
+          <div class="card-title">100% Deterministic Runtime</div>
+          <p>Standard Playwright + TypeScript execution in GitHub Actions, GitLab CI, or Jenkins with zero runtime token costs.</p>
         </div>
-        <div class="card">
+        <div class="card card-subtle">
+          <span class="metric-tag">Engineering Velocity</span>
           <div class="metric-stat">10x Faster</div>
-          <div class="card-title">Spec Authoring & Healing</div>
-          <p>Gemini 4 Argon inspects live DOM accessibility trees via Playwright MCP to scaffold & repair Page Objects.</p>
+          <div class="card-title">Spec Authoring &amp; Maintenance</div>
+          <p>Structured IDE workflows inspect live DOM accessibility trees via Playwright MCP to scaffold and repair Page Objects.</p>
         </div>
-        <div class="card">
+        <div class="card card-subtle">
+          <span class="metric-tag">Data Safety</span>
           <div class="metric-stat">3-Tier Guard</div>
-          <div class="card-title">Blast-Radius Isolation</div>
-          <p>Cryptographic & runtime environment guards prevent mutating tests from ever executing on Stage or Prod.</p>
+          <div class="card-title">Environment Isolation</div>
+          <p>Runtime environment guards prevent state-mutating tests from executing against Staging or Production databases.</p>
         </div>
-        <div class="card">
+        <div class="card card-subtle">
+          <span class="metric-tag">Ownership</span>
           <div class="metric-stat">14 Days</div>
-          <div class="card-title">Turnkey Client Handover</div>
-          <p>Delivered as a self-contained, zero-lock-in repository with Multi-Cloud Vault & TestOps telemetry wired in.</p>
+          <div class="card-title">Turnkey Repository Handover</div>
+          <p>Delivered as a clean, zero-lock-in repository inside your organization with secret brokers and TestOps reporting wired in.</p>
         </div>
       </div>
 
       <div class="bento-2">
-        <div class="card" style="border-left: 3px solid var(--rose);">
+        <div class="card" style="border-top: 3px solid var(--danger);">
           <div class="card-header">
-            <span class="card-title" style="color: #fda4af;">Why Legacy & Runtime-AI Suites Fail</span>
+            <span class="card-title">Common Pitfalls in Legacy &amp; Runtime-AI Suites</span>
           </div>
-          <p>
-            • Raw <code>page.locator()</code> calls scattered across hundreds of spec files.<br />
-            • Runtime AI wrappers adding 4–8 seconds of latency per click and masking real bugs.<br />
-            • Destructive E2E tests accidentally corrupting staging or production databases.<br />
-            • Hardcoded passwords leaking into HTML and Allure step logs.
-          </p>
+          <ul class="clean-list">
+            <li>Raw <code>page.locator()</code> calls scattered across hundreds of test files, creating high maintenance overhead when UI changes.</li>
+            <li>Runtime AI wrappers adding 4–8 seconds of network latency per click and masking real application regressions.</li>
+            <li>Mutating E2E tests accidentally altering shared staging or production records.</li>
+            <li>Plaintext credentials exposed in HTML reports and CI step logs.</li>
+          </ul>
         </div>
-        <div class="card" style="border-left: 3px solid var(--emerald);">
+        <div class="card" style="border-top: 3px solid var(--positive);">
           <div class="card-header">
-            <span class="card-title" style="color: #6ee7b7;">The ArgonQA™ Deterministic Standard</span>
+            <span class="card-title">The ArgonQA Engineering Standard</span>
           </div>
-          <p>
-            • <strong>Strict Page Object Encapsulation</strong> enforced by custom ESLint AST rules.<br />
-            • <strong>0–100 Selector Stability Scoring</strong> prioritizing W3C ARIA roles &amp; test attributes.<br />
-            • <strong>Self-Cleaning Data Supply</strong> (`EntitySupplyManager`) with LIFO teardown queues.<br />
-            • <strong>Redacted Secret Injection</strong> (`fillSecure`) + HashiCorp Vault &amp; Doppler brokers.
-          </p>
+          <ul class="clean-list">
+            <li><strong>Strict Page Object Encapsulation</strong> enforced at compile time via custom ESLint AST rules.</li>
+            <li><strong>0–100 Selector Stability Scoring</strong> prioritizing W3C ARIA roles and explicit test attributes.</li>
+            <li><strong>Self-Cleaning Test Data</strong> (<code>EntitySupplyManager</code>) with automatic LIFO teardown queues.</li>
+            <li><strong>Redacted Secret Injection</strong> (<code>fillSecure</code>) paired with HashiCorp Vault, Doppler, or CI secrets.</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- MODULE 02: 4-LAYER ARCHITECTURE -->
+    <!-- SECTION 02: 4-LAYER ARCHITECTURE -->
     <section class="deck-section" data-module="1">
-      <div class="module-kicker">Module 02 // Clean-Room Separation of Concerns</div>
-      <h2>The 4-Layer ArgonQA™ Architecture</h2>
+      <div class="module-kicker">Section 02 — System Design</div>
+      <h2>Clean Four-Layer Separation of Concerns</h2>
       <p class="lead">
-        Product teams only write business-readable Page Objects and Spec files. The underlying Core Engine, Security Brokers, and Agentic Skills work out of the box.
+        Product and QA engineers only maintain readable Page Objects and Spec files. The underlying base engine, credential providers, and IDE workflows are standardized across the repository.
       </p>
 
       <div class="bento-2">
         <div>
-          <div class="card" style="margin-bottom: 16px; border-left: 3px solid var(--emerald);">
+          <div class="card" style="margin-bottom: 14px;">
             <div class="card-title">Layer 1 — Business-Readable Spec Layer (<code>tests/e2e/</code>)</div>
-            <p>Zero raw selectors allowed. 1 TestOps step = 1 Playwright test with <code>tmsCase()</code> traceability and <code>isDevRun()</code> mutation guards.</p>
+            <p>Zero raw selectors permitted in specs. 1 TestOps step = 1 Playwright test with <code>tmsCase()</code> traceability and <code>isDevRun()</code> mutation guards.</p>
           </div>
-          <div class="card" style="margin-bottom: 16px; border-left: 3px solid var(--cyan);">
+          <div class="card" style="margin-bottom: 14px;">
             <div class="card-title">Layer 2 — Typed Page Object &amp; SLA Engine (<code>src/pages/</code>)</div>
-            <p>Extends <code>BasePage</code>: automatic step telemetry, <code>fillSecure()</code> secret masking, <code>interceptApiCall()</code> network assertions, and <code>assertInteractionSla()</code> performance budgets.</p>
+            <p>Extends <code>BasePage</code>: structured step logging, <code>fillSecure()</code> credential redaction, <code>interceptApiCall()</code> network assertions, and <code>assertInteractionSla()</code> timing checks.</p>
           </div>
-          <div class="card" style="margin-bottom: 16px; border-left: 3px solid var(--amber);">
+          <div class="card" style="margin-bottom: 14px;">
             <div class="card-title">Layer 3 — Resilience &amp; Secret Brokers (<code>src/helpers/</code>)</div>
-            <p>Includes <code>CredentialProvider</code> (Env/Vault/Doppler), <code>EntitySupplyManager</code> (LIFO cleanup), <code>FileDownloadInspector</code> (PDF/XLSX binary magic-byte checks), and <code>SmartLocatorDiagnostics</code>.</p>
+            <p>Includes <code>CredentialProvider</code> (Env/Vault/Doppler), <code>EntitySupplyManager</code> (LIFO cleanup), <code>FileDownloadInspector</code> (PDF/XLSX verification), and <code>SmartLocatorDiagnostics</code>.</p>
           </div>
-          <div class="card" style="border-left: 3px solid var(--indigo);">
-            <div class="card-title">Layer 4 — Gemini 4 Argon Agentic Skills (<code>.agent/skills/</code>)</div>
-            <p>Interactive slash-workflows (<code>/project-setup</code>, <code>/local-setup</code>, <code>/create-tests</code>, <code>/heal-locators</code>) powered by Playwright MCP live DOM inspection.</p>
+          <div class="card">
+            <div class="card-title">Layer 4 — Assisted Engineering Workflows (<code>.agent/skills/</code>)</div>
+            <p>Standardized IDE workflows (<code>project-setup</code>, <code>local-setup</code>, <code>create-tests</code>, <code>heal-locators</code>) backed by live Playwright DOM inspection.</p>
           </div>
         </div>
 
         <div>
-          <pre><code><span class="tok-cm">// tests/e2e/smoke/navigation.spec.ts — 100% Selector-Free Spec</span>
+          <pre><code><span class="tok-cm">// tests/e2e/smoke/navigation.spec.ts — Selector-Free Spec</span>
 <span class="tok-kw">import</span> { test } <span class="tok-kw">from</span> <span class="tok-str">'../../../src/fixtures/base.fixture'</span>;
 <span class="tok-kw">import</span> { isDevRun } <span class="tok-kw">from</span> <span class="tok-str">'../../../src/helpers/environment.helper'</span>;
 <span class="tok-kw">import</span> { tmsCase } <span class="tok-kw">from</span> <span class="tok-str">'../../../src/helpers/tms.helper'</span>;
 
-test.<span class="tok-fn">describe</span>(<span class="tok-str">'Workspace Shell (@smoke @sanity @regression)'</span>, () =&gt; {
-  test(<span class="tok-str">'1 — shell loads within 1200ms SLA @prod-safe'</span>, <span class="tok-kw">async</span> ({
+test.<span class="tok-fn">describe</span>(<span class="tok-str">'Application Shell &amp; Checkout (@smoke @sanity)'</span>, () =&gt; {
+  test(<span class="tok-str">'1 — shell loads, authenticates, and sorts catalog @prod-safe'</span>, <span class="tok-kw">async</span> ({
     navigationPage,
   }) =&gt; {
-    <span class="tok-kw">await</span> <span class="tok-fn">tmsCase</span>(<span class="tok-str">'TC-10001'</span>, { severity: <span class="tok-str">'critical'</span> });
+    <span class="tok-kw">await</span> <span class="tok-fn">tmsCase</span>(100001);
 
-    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">assertInteractionSla</span>(<span class="tok-str">'Initial Shell Render'</span>, 1200, <span class="tok-kw">async</span> () =&gt; {
-      <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">navigateTo</span>(<span class="tok-str">'https://example.com'</span>);
-    });
-    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">expectPageTitleToMatch</span>(/Example Domain/i);
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">navigateTo</span>(<span class="tok-str">'https://www.saucedemo.com'</span>);
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">authenticateDemoPortal</span>(<span class="tok-str">'standard_user'</span>, <span class="tok-str">'secret_sauce'</span>);
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">sortCatalogBy</span>(<span class="tok-str">'hilo'</span>);
   });
 
-  test(<span class="tok-str">'2 — state-mutating workflow runs on verified dev only'</span>, <span class="tok-kw">async</span> ({
+  test(<span class="tok-str">'2 — state-mutating checkout runs on verified dev only'</span>, <span class="tok-kw">async</span> ({
     navigationPage,
   }) =&gt; {
-    test.<span class="tok-fn">skip</span>(!<span class="tok-fn">isDevRun</span>(), <span class="tok-str">'Mutating test: restricted to dev environment'</span>);
-    <span class="tok-kw">await</span> <span class="tok-fn">tmsCase</span>(<span class="tok-str">'TC-10002'</span>);
+    test.<span class="tok-fn">skip</span>(!<span class="tok-fn">isDevRun</span>(), <span class="tok-str">'Mutating test: runs on dev environment only'</span>);
+    <span class="tok-kw">await</span> <span class="tok-fn">tmsCase</span>(100002);
 
-    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">navigateTo</span>(<span class="tok-str">'https://example.com'</span>);
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">navigateTo</span>(<span class="tok-str">'https://www.saucedemo.com'</span>);
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">authenticateDemoPortal</span>(<span class="tok-str">'standard_user'</span>, <span class="tok-str">'secret_sauce'</span>);
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">addCoreItemsToCart</span>();
+    <span class="tok-kw">await</span> navigationPage.<span class="tok-fn">completeCheckoutFlow</span>(<span class="tok-str">'Denis'</span>, <span class="tok-str">'Zilai'</span>, <span class="tok-str">'400001'</span>);
   });
 });</code></pre>
         </div>
       </div>
     </section>
 
-    <!-- MODULE 03: BLAST-RADIUS ENVIRONMENT ISOLATION -->
+    <!-- SECTION 03: BLAST-RADIUS ENVIRONMENT ISOLATION -->
     <section class="deck-section" data-module="2">
-      <div class="module-kicker">Module 03 // Zero-Accident Production Governance</div>
-      <h2>3-Tier Blast-Radius Environment Isolation</h2>
+      <div class="module-kicker">Section 03 — Environment Governance</div>
+      <h2>Three-Tier Environment Isolation</h2>
       <p class="lead">
-        Click any environment tier below to inspect how <code>resolveContext()</code>, URL hostname inspection, and <code>PROTECTED_ENTITY_IDS</code> enforce zero data corruption across your deployment pipeline.
+        Select an environment tier below to inspect how <code>resolveContext()</code>, URL hostname inspection, and <code>PROTECTED_ENTITY_IDS</code> prevent accidental state mutations in Staging and Production.
       </p>
 
       <div class="interactive-tabs">
-        <button class="tab-btn active" onclick="selectEnvTab('dev', this)">DEV — Self-Cleaning Write Mode</button>
-        <button class="tab-btn" onclick="selectEnvTab('stage', this)">STAGE — Read-Only Release Gate</button>
-        <button class="tab-btn" onclick="selectEnvTab('prod', this)">PROD — Locked to @prod-safe</button>
+        <button class="tab-btn active" onclick="selectEnvTab('dev', this)">DEV — Read/Write + LIFO Cleanup</button>
+        <button class="tab-btn" onclick="selectEnvTab('stage', this)">STAGE — Read-Only Verification</button>
+        <button class="tab-btn" onclick="selectEnvTab('prod', this)">PROD — Restricted to @prod-safe</button>
       </div>
 
-      <div id="envPanelContent" class="card" style="padding: 28px;">
+      <div id="envPanelContent" class="card card-subtle" style="padding: 28px;">
         <div class="bento-2">
           <div>
-            <h3 id="envTitle" style="font-size: 22px; color: var(--emerald); margin-bottom: 10px;">DEV Environment: Full CRUD + LIFO Self-Cleanup</h3>
-            <p id="envDesc" style="font-size: 15px; margin-bottom: 16px;">
-              On <code>ENV=dev</code>, full regression suites provision fresh records on demand via <code>EntitySupplyManager.findOrProvision()</code> and automatically tear them down in reverse (LIFO) order after the test completes—while strictly blocking any modification to golden baseline IDs in <code>PROTECTED_ENTITY_IDS</code>.
+            <h3 id="envTitle" style="font-size: 20px; color: var(--text-main); margin-bottom: 10px;">DEV Environment: Full CRUD + Automatic LIFO Teardown</h3>
+            <p id="envDesc" style="font-size: 14.5px; margin-bottom: 18px;">
+              On <code>ENV=dev</code>, regression suites provision test records on demand via <code>EntitySupplyManager.findOrProvision()</code> and automatically clean them up in reverse (LIFO) order after the test finishes—while protecting baseline records listed in <code>PROTECTED_ENTITY_IDS</code>.
             </p>
-            <div style="font-family: var(--font-mono); font-size: 13px; color: var(--cyan);" id="envCommand">
+            <div style="font-family: var(--font-mono); font-size: 12.5px; color: var(--accent); background: var(--bg-sheet); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border);" id="envCommand">
               $ ENV=dev npx playwright test --project=chromium
             </div>
           </div>
@@ -707,69 +791,69 @@ const order = await entitySupply.findOrProvision({
       </div>
     </section>
 
-    <!-- MODULE 04: AGENTIC WORKFLOWS & 0-100 STABILITY SCORE -->
+    <!-- SECTION 04: AUTHORING & 0-100 STABILITY SCORE -->
     <section class="deck-section" data-module="3">
-      <div class="module-kicker">Module 04 // Gemini 4 Argon + Playwright MCP</div>
-      <h2>Agentic Authoring &amp; 0–100 Locator Stability Scoring</h2>
+      <div class="module-kicker">Section 04 — Authoring &amp; Maintenance</div>
+      <h2>Structured Test Authoring &amp; Selector Stability Scoring</h2>
       <p class="lead">
-        Engineers invoke slash-skills inside Google Antigravity to convert tickets into specs (<code>/create-tests</code>) and repair broken selectors (<code>/heal-locators</code>) using our deterministic 0–100 Stability Score hierarchy.
+        Engineers use repeatable workflows to turn product requirements into typed specs (<code>create-tests</code>) and repair broken selectors (<code>heal-locators</code>) using a transparent 0–100 stability scoring hierarchy.
       </p>
 
       <div class="bento-2">
         <div class="card">
-          <div class="card-title" style="margin-bottom: 14px; color: var(--emerald);"><code>/create-tests</code> — Ticket to PR in 4 Minutes</div>
-          <p style="margin-bottom: 10px;"><strong>1. Context Ingestion:</strong> Reads Jira/Linear requirements + developer PR diff to spot edge cases and feature flags.</p>
-          <p style="margin-bottom: 10px;"><strong>2. Live MCP DOM Probe:</strong> Opens the target route in headless Chromium via <code>.mcp.json</code> and maps accessible elements.</p>
-          <p style="margin-bottom: 10px;"><strong>3. Human-in-the-Loop Approval:</strong> Proposes happy-path, negative, and <code>@prod-safe</code> test steps for engineer sign-off.</p>
-          <p><strong>4. Automated Scaffolding &amp; Verification:</strong> Provisions TestOps cases, writes the Page Object + Spec, and runs <code>npx playwright test</code> + <code>npm run lint</code>.</p>
+          <div class="card-title" style="margin-bottom: 14px;"><code>create-tests</code> — From Requirement to Verified Spec</div>
+          <p style="margin-bottom: 10px;"><strong>1. Requirement &amp; Diff Review:</strong> Analyzes ticket acceptance criteria and frontend PR diffs to identify affected routes and edge cases.</p>
+          <p style="margin-bottom: 10px;"><strong>2. Live DOM Inspection:</strong> Opens the target application route in Chromium and maps accessible roles, labels, and test attributes.</p>
+          <p style="margin-bottom: 10px;"><strong>3. Step-by-Step Test Plan:</strong> Proposes happy-path, validation, and <code>@prod-safe</code> test steps for engineer review before generating code.</p>
+          <p><strong>4. Page Object &amp; Spec Generation:</strong> Writes the typed Page Object and Spec file, links TestRail/Xray IDs, and verifies with <code>npm run lint</code> and <code>npx playwright test</code>.</p>
         </div>
 
         <div class="card">
-          <div class="card-title" style="margin-bottom: 14px; color: var(--cyan);"><code>/heal-locators</code> — 0–100 Stability Score Engine</div>
+          <div class="card-title" style="margin-bottom: 14px;"><code>heal-locators</code> — 0–100 Selector Stability Hierarchy</div>
           <div class="score-row">
             <span class="score-badge score-98">98 / 100</span>
             <div>
-              <strong>Dedicated Test ID (<code>this.getByTestId('submit-order')</code>)</strong>
-              <p>Immune to copy changes, i18n translations, and CSS refactors.</p>
+              <strong>Dedicated Test Attribute (<code>this.getByTestId('submit-order')</code>)</strong>
+              <p>Decoupled from UI copy changes, localization, and CSS styling refactors.</p>
             </div>
           </div>
           <div class="score-row">
             <span class="score-badge score-92">92 / 100</span>
             <div>
               <strong>W3C Accessible Role (<code>this.page.getByRole('button', { name })</code>)</strong>
-              <p>Verifies real user accessibility tree compliance while remaining resilient.</p>
+              <p>Verifies accessibility tree compliance while matching how users interact with the page.</p>
             </div>
           </div>
           <div class="score-row">
             <span class="score-badge score-85">85 / 100</span>
             <div>
-              <strong>Semantic Form Label (<code>this.page.getByLabel('Invoice Date')</code>)</strong>
-              <p>Validates explicit <code>&lt;label for="..."&gt;</code> bindings on form controls.</p>
+              <strong>Explicit Form Label (<code>this.page.getByLabel('Invoice Date')</code>)</strong>
+              <p>Validates semantic <code>&lt;label for="..."&gt;</code> bindings across form inputs.</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MODULE 05: ENTERPRISE HARDENING SUITE -->
+    <!-- SECTION 05: ENTERPRISE HARDENING SUITE -->
     <section class="deck-section" data-module="4">
-      <div class="module-kicker">Module 05 // Battle-Tested Production Utilities</div>
-      <h2>Built for Complex Enterprise Web Applications</h2>
+      <div class="module-kicker">Section 05 — Production Utilities</div>
+      <h2>Built-In Helpers for Complex Web Applications</h2>
       <p class="lead">
-        Out-of-the-box solutions for the 4 hardest problems in enterprise E2E automation: multi-cloud secrets, virtualized data grids, binary file downloads, and hydration timing.
+        Pre-built utilities for common enterprise testing challenges: external secret managers, virtualized data tables, binary file exports, and API/SLA assertions.
       </p>
 
       <div class="bento-2">
         <div class="card">
           <div class="card-title">1. Multi-Cloud Secret Broker (<code>CredentialProvider</code>)</div>
-          <p style="margin-bottom: 12px;">Switch between <code>env</code>, <code>HashiCorp Vault</code>, and <code>Doppler</code> via a single environment variable—paired with <code>fillSecure()</code> so secrets are always masked as <code>***REDACTED***</code> in logs.</p>
+          <p style="margin-bottom: 12px;">Resolves credentials from <code>.env</code>, <code>HashiCorp Vault</code>, or <code>Doppler</code>—paired with <code>fillSecure()</code> so sensitive inputs are always logged as <code>***REDACTED***</code> in test reports.</p>
           <pre><code>const creds = await CredentialProvider.getCredentials(tenant, env);
 await this.fillSecure(this.passwordInput, creds.password, 'SSO Password');</code></pre>
         </div>
 
         <div class="card">
-          <div class="card-title">2. Virtualized Grid Reader (<code>readAllVirtualizedRows</code>)</div>
-          <p style="margin-bottom: 12px;">Scrolls AG Grid / TanStack / MUI virtualized tables incrementally, indexing rows by <code>data-index</code> so unmounted top rows are preserved in memory and verified against total row counts.</p>
+          <div class="card-title">2. Virtualized Data Grid Reader (<code>readAllVirtualizedRows</code>)</div>
+          <p style="margin-bottom: 12px;">Scrolls AG Grid, TanStack Virtual, or MUI DataGrid tables incrementally, indexing rows by <code>data-index</code> so recycled DOM rows are captured without duplicates.</p>
           <pre><code>const rows = await this.readAllVirtualizedRows({
   scrollContainer: this.gridViewport,
   rowLocator: this.gridRow,
@@ -778,15 +862,15 @@ await this.fillSecure(this.passwordInput, creds.password, 'SSO Password');</code
         </div>
 
         <div class="card">
-          <div class="card-title">3. Binary File Signature Inspector (<code>FileDownloadInspector</code>)</div>
-          <p style="margin-bottom: 12px;">Don't just test that a button triggered a download—verify the actual binary magic bytes (<code>%PDF-</code> header, <code>PK\x03\x04</code> XLSX/ZIP archive header, or parsed CSV rows) in memory.</p>
+          <div class="card-title">3. File Export Verifier (<code>FileDownloadInspector</code>)</div>
+          <p style="margin-bottom: 12px;">Validates exported reports in memory by checking binary file signatures (<code>%PDF-</code> header, <code>PK\x03\x04</code> XLSX zip container) and parsed CSV row counts.</p>
           <pre><code>const pdfMeta = await FileDownloadInspector.verifyPdfSignature(download);
 expect(pdfMeta.byteLength).toBeGreaterThan(1024);</code></pre>
         </div>
 
         <div class="card">
-          <div class="card-title">4. Atomic API Interception &amp; SLA Budgets (<code>BasePage</code>)</div>
-          <p style="margin-bottom: 12px;">Assert backend HTTP status codes and sub-second frontend interaction budgets in a single deterministic call.</p>
+          <div class="card-title">4. Atomic API Interception &amp; SLA Checks (<code>BasePage</code>)</div>
+          <p style="margin-bottom: 12px;">Combines UI triggers with backend HTTP response verification and client-side interaction timing budgets in a single method call.</p>
           <pre><code>await this.interceptApiCall('/api/v1/checkout', 200, async () =&gt; {
   await this.clickElement(this.confirmOrderBtn, 'Confirm Order');
 });</code></pre>
@@ -794,102 +878,102 @@ expect(pdfMeta.byteLength).toBeGreaterThan(1024);</code></pre>
       </div>
     </section>
 
-    <!-- MODULE 06: ADAPTIVE CI/CD SHARDING & TESTOPS -->
+    <!-- SECTION 06: ADAPTIVE CI/CD SHARDING & TESTOPS -->
     <section class="deck-section" data-module="5">
-      <div class="module-kicker">Module 06 // Parallel Execution &amp; Telemetry</div>
-      <h2>Trigger-Aware CI Sharding &amp; Multi-Provider TestOps</h2>
+      <div class="module-kicker">Section 06 — CI/CD &amp; Traceability</div>
+      <h2>Trigger-Aware CI Sharding &amp; TestOps Reporting</h2>
       <p class="lead">
-        Our GitHub Actions workflow dynamically scales parallel shards based on the pipeline trigger and streams non-blocking JUnit + Allure telemetry to TestRail, Xray, or Qase.
+        The included GitHub Actions pipeline scales parallel worker shards based on the build trigger and publishes JUnit, HTML, and TestRail/Xray/Qase traceability reports.
       </p>
 
       <div class="bento-3" style="margin-bottom: 24px;">
-        <div class="card" style="border-top: 3px solid var(--emerald);">
-          <div class="card-title">Pull Request / Push Gate</div>
-          <div class="metric-stat" style="font-size: 24px; margin: 8px 0;">@smoke • 2 Shards</div>
-          <p>Executes against <code>stage</code> or ephemeral PR preview URLs (<code>CUSTOM_URL</code>) in under 90 seconds.</p>
+        <div class="card card-subtle">
+          <span class="metric-tag">Pull Request Gate</span>
+          <div class="metric-stat" style="font-size: 22px; margin: 4px 0 8px;">@smoke • 2 Shards</div>
+          <p>Runs fast verification against staging or ephemeral PR preview deployments (<code>CUSTOM_URL</code>) in ~90 seconds.</p>
         </div>
-        <div class="card" style="border-top: 3px solid var(--cyan);">
-          <div class="card-title">Scheduled Nightly Matrix</div>
-          <div class="metric-stat" style="font-size: 24px; margin: 8px 0;">@regression • 4 Shards</div>
-          <p>Runs the complete end-to-end suite across Chromium, Firefox, and WebKit with automatic trace retention on failure.</p>
+        <div class="card card-subtle">
+          <span class="metric-tag">Scheduled Nightly Run</span>
+          <div class="metric-stat" style="font-size: 22px; margin: 4px 0 8px;">@regression • 4 Shards</div>
+          <p>Executes the full regression suite across Chromium, Firefox, and WebKit with trace, video, and DOM snapshot retention on failure.</p>
         </div>
-        <div class="card" style="border-top: 3px solid var(--amber);">
-          <div class="card-title">On-Demand Release Dispatch</div>
-          <div class="metric-stat" style="font-size: 24px; margin: 8px 0;">1–8 Configurable Shards</div>
-          <p>Parameterized <code>workflow_dispatch</code> allowing release managers to select tenant, environment, and tag filter.</p>
+        <div class="card card-subtle">
+          <span class="metric-tag">On-Demand Release Gate</span>
+          <div class="metric-stat" style="font-size: 22px; margin: 4px 0 8px;">1–8 Configurable Shards</div>
+          <p>Parameterized <code>workflow_dispatch</code> allowing engineers to select target tenant, environment, and tag filter.</p>
         </div>
       </div>
 
-      <pre><code><span class="tok-cm"># Self-Describing TestOps Run Telemetry (TmsApiClient.formatCiRunName)</span>
-ArgonQA #8849201 • [stage] • @smoke • 2x Shards   &rarr; 100% Passed (38s)
+      <pre><code><span class="tok-cm"># Automated TestOps Run Naming (TmsApiClient.formatCiRunName)</span>
+ArgonQA #8849201 • [stage] • @smoke • 2x Shards      &rarr; 100% Passed (38s)
 ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed (2m 14s)</code></pre>
     </section>
 
-    <!-- MODULE 07: LIVE CLIENT ROI SIMULATOR & 14-DAY ROADMAP -->
+    <!-- SECTION 07: LIVE CLIENT ROI SIMULATOR & 14-DAY ROADMAP -->
     <section class="deck-section" data-module="6">
-      <div class="module-kicker">Module 07 // Executive Business Case &amp; Delivery</div>
-      <h2>Interactive Client ROI Calculator &amp; 14-Day Turnkey Delivery</h2>
+      <div class="module-kicker">Section 07 — Engineering Impact &amp; Rollout</div>
+      <h2>Engineering Time-Savings Estimator &amp; 14-Day Rollout</h2>
       <p class="lead">
-        Adjust the sliders below during your discovery call to model your engineering team's annual hours and budget saved by adopting the ArgonQA™ platform.
+        Use the estimator below to model the engineering hours reclaimed by replacing manual pre-release regression cycles and brittle selector maintenance with a deterministic Playwright suite.
       </p>
 
       <div class="bento-2">
         <div class="card">
-          <div class="card-title" style="margin-bottom: 18px;">Live Engineering Savings Simulator</div>
+          <div class="card-title" style="margin-bottom: 18px;">Engineering Capacity Estimator</div>
 
           <div class="roi-control">
-            <label><span>QA / Frontend Engineers Maintaining Tests</span><span id="lblEngineers" style="color:var(--emerald);">4 Engineers</span></label>
+            <label><span>Engineers Involved in Regression / QA</span><span id="lblEngineers" style="color:var(--accent); font-weight:600;">4 Engineers</span></label>
             <input type="range" id="rngEngineers" min="1" max="20" value="4" oninput="recalcRoi()" />
           </div>
 
           <div class="roi-control">
-            <label><span>Production Releases per Month</span><span id="lblReleases" style="color:var(--emerald);">8 Releases / mo</span></label>
+            <label><span>Production Releases per Month</span><span id="lblReleases" style="color:var(--accent); font-weight:600;">8 Releases / mo</span></label>
             <input type="range" id="rngReleases" min="2" max="40" value="8" oninput="recalcRoi()" />
           </div>
 
           <div class="roi-control">
-            <label><span>Hours Spent per Release on Manual Regression &amp; Flaky Fixes</span><span id="lblHours" style="color:var(--emerald);">16 hrs / release</span></label>
+            <label><span>Hours Spent per Release on Manual Checks &amp; Flaky Fixes</span><span id="lblHours" style="color:var(--accent); font-weight:600;">16 hrs / release</span></label>
             <input type="range" id="rngHours" min="4" max="60" value="16" oninput="recalcRoi()" />
           </div>
 
           <div class="roi-control">
-            <label><span>Blended Engineering Hourly Cost ($ USD)</span><span id="lblRate" style="color:var(--emerald);">$95 / hr</span></label>
+            <label><span>Blended Engineering Hourly Cost ($ USD)</span><span id="lblRate" style="color:var(--accent); font-weight:600;">$95 / hr</span></label>
             <input type="range" id="rngRate" min="50" max="180" step="5" value="95" oninput="recalcRoi()" />
           </div>
 
-          <div style="margin-top: 22px; padding: 18px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.35); display: flex; justify-content: space-between; align-items: center;">
+          <div style="margin-top: 22px; padding: 18px 20px; border-radius: 8px; background: var(--positive-soft); border: 1px solid var(--positive-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
-              <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary);">Projected Annual Engineering Savings</div>
-              <div id="roiSavingsUsd" style="font-family: var(--font-mono); font-size: 34px; font-weight: 800; color: var(--emerald);">$116,736 / yr</div>
+              <div style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); font-weight: 600;">Estimated Annual Engineering Value Reclaimed</div>
+              <div id="roiSavingsUsd" style="font-family: var(--font-sans); font-size: 30px; font-weight: 700; color: var(--positive); letter-spacing: -0.02em;">$116,736 / yr</div>
             </div>
             <div style="text-align: right;">
-              <div style="font-size: 12px; color: var(--text-secondary);">Hours Reclaimed</div>
-              <div id="roiSavingsHrs" style="font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--cyan);">1,228 hrs / yr</div>
+              <div style="font-size: 11.5px; color: var(--text-secondary); font-weight: 500;">Engineering Time Saved</div>
+              <div id="roiSavingsHrs" style="font-family: var(--font-mono); font-size: 19px; font-weight: 600; color: var(--text-main);">1,228 hrs / yr</div>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title" style="margin-bottom: 18px;">14-Day Turnkey Client Onboarding Roadmap</div>
+          <div class="card-title" style="margin-bottom: 18px;">Standard 14-Day Implementation Schedule</div>
           <div class="score-row">
             <span class="score-badge score-98">Days 1–3</span>
             <div>
-              <strong>Phase 1: Architecture &amp; Auth Bootstrap</strong>
-              <p>Run <code>/project-setup</code>, wire SSO/MFA storageState caching, configure <code>dev</code>/<code>stage</code>/<code>prod</code> blast-radius guards, and integrate Vault/Doppler secrets.</p>
+              <strong>Phase 1: Repository &amp; Authentication Setup</strong>
+              <p>Configure environment targets (<code>dev</code>/<code>stage</code>/<code>prod</code>), SSO/session storage caching (<code>auth.setup.ts</code>), and secret resolution.</p>
             </div>
           </div>
           <div class="score-row">
             <span class="score-badge score-92">Days 4–10</span>
             <div>
-              <strong>Phase 2: Golden-Path Suite &amp; BasePage Hardening</strong>
-              <p>Automate your top 15–25 revenue-critical user journeys (<code>@smoke</code>, <code>@sanity</code>, <code>@prod-safe</code>) with 100% Page Object encapsulation.</p>
+              <strong>Phase 2: Core Critical-Path Automation</strong>
+              <p>Implement Page Objects and step-numbered specs for the top business-critical workflows (<code>@smoke</code>, <code>@sanity</code>, <code>@prod-safe</code>).</p>
             </div>
           </div>
           <div class="score-row">
             <span class="score-badge score-85">Days 11–14</span>
             <div>
-              <strong>Phase 3: Sharded CI/CD &amp; Team Enablement Handover</strong>
-              <p>Deploy trigger-aware GitHub Actions sharding, connect TestRail/Xray/Allure dashboards, and train your engineers on <code>/create-tests</code> &amp; <code>/heal-locators</code>.</p>
+              <strong>Phase 3: CI/CD Sharding &amp; Team Handover</strong>
+              <p>Enable parallel GitHub Actions sharding, TestOps reporting, and walkthrough sessions for internal developers.</p>
             </div>
           </div>
         </div>
@@ -898,11 +982,11 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
 
   </main>
 
-  <!-- KEYNOTE NAVIGATION DOCK -->
+  <!-- KEYNOTE BOTTOM DOCK -->
   <div class="keynote-dock" id="keynoteDock">
-    <button class="dock-btn" onclick="stepModule(-1)" title="Previous Module (Left Arrow)">&larr;</button>
-    <span id="dockCounter" style="font-family: var(--font-mono); font-size: 12px; padding: 0 8px;">01 / 07</span>
-    <button class="dock-btn" onclick="stepModule(1)" title="Next Module (Right Arrow)">&rarr;</button>
+    <button class="dock-btn" onclick="stepModule(-1)" title="Previous Section (Left Arrow)">&larr;</button>
+    <span id="dockCounter" style="font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 0 6px; color: var(--text-secondary);">01 / 07</span>
+    <button class="dock-btn" onclick="stepModule(1)" title="Next Section (Right Arrow)">&rarr;</button>
   </div>
 
   <script>
@@ -926,6 +1010,31 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
       }
     }
 
+    function stepModule(delta) {
+      goToModule(currentModule + delta);
+    }
+
+    function togglePresentationMode() {
+      const isKeynote = document.body.classList.toggle('keynote-mode');
+      document.getElementById('toggleModeBtn').textContent = isKeynote
+        ? 'Scroll View'
+        : 'Slide View';
+      document.getElementById('keynoteDock').style.display = isKeynote ? 'flex' : 'none';
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      document.getElementById('themeBtn').textContent = next === 'dark' ? 'Light Theme' : 'Dark Theme';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!document.body.classList.contains('keynote-mode')) return;
+      if (e.key === 'ArrowRight') stepModule(1);
+      if (e.key === 'ArrowLeft') stepModule(-1);
+    });
+
     // Touch swipe navigation on mobile devices in Keynote mode
     let touchStartX = 0;
     let touchStartY = 0;
@@ -940,7 +1049,6 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
       if (!e.changedTouches || !e.changedTouches[0]) return;
       const dx = e.changedTouches[0].screenX - touchStartX;
       const dy = e.changedTouches[0].screenY - touchStartY;
-      // Only trigger module swipe if horizontal gesture is dominant and not inside a range slider or code block
       const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
       if (tag === 'input' || tag === 'pre' || tag === 'code') return;
       if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.8) {
@@ -948,42 +1056,21 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
       }
     }, { passive: true });
 
-    function stepModule(delta) {
-      goToModule(currentModule + delta);
-    }
-
-    function togglePresentationMode() {
-      const isKeynote = document.body.classList.toggle('keynote-mode');
-      document.getElementById('toggleModeBtn').textContent = isKeynote
-        ? 'Switch to Scroll View'
-        : 'Switch to Keynote Mode';
-      document.getElementById('keynoteDock').style.display = isKeynote ? 'flex' : 'none';
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (!document.body.classList.contains('keynote-mode')) return;
-      if (e.key === 'ArrowRight') stepModule(1);
-      if (e.key === 'ArrowLeft') stepModule(-1);
-    });
-
     const envData = {
       dev: {
-        title: 'DEV Environment: Full CRUD + LIFO Self-Cleanup',
-        color: 'var(--emerald)',
-        desc: 'On ENV=dev, full regression suites provision fresh records on demand via EntitySupplyManager.findOrProvision() and automatically tear them down in reverse (LIFO) order after the test completes—while strictly blocking any modification to golden baseline IDs in PROTECTED_ENTITY_IDS.',
+        title: 'DEV Environment: Full CRUD + Automatic LIFO Teardown',
+        desc: 'On ENV=dev, regression suites provision test records on demand via EntitySupplyManager.findOrProvision() and automatically clean them up in reverse (LIFO) order after the test finishes—while protecting baseline records listed in PROTECTED_ENTITY_IDS.',
         cmd: '$ ENV=dev npx playwright test --project=chromium',
         code: `test.skip(!isDevRun(), 'Mutating test: runs on dev only');\n\nconst order = await entitySupply.findOrProvision({\n  entityType: 'SubscriptionOrder',\n  findExistingFn: () => api.findDraftOrder(),\n  provisionNewFn: () => api.createDraftOrder(),\n  cleanupFn: (id) => api.deleteDraftOrder(id), // LIFO auto-cleanup\n});`
       },
       stage: {
         title: 'STAGE Environment: Strictly Read-Only Pre-Release Verification',
-        color: 'var(--cyan)',
         desc: 'On ENV=stage, isDevRun() evaluates to false—automatically skipping any state-mutating test. Even if a developer passes a staging URL via CUSTOM_URL, hostname inspection detects "-stage" or "stage." and enforces read-only mode.',
         cmd: '$ ENV=stage npx playwright test --grep "@smoke|@sanity"',
         code: `// Automatically skipped on stage:\ntest.skip(!isDevRun(), 'Mutating test: runs on dev only');\n\n// Allowed on stage: non-destructive assertions & SLA checks\nawait navigationPage.assertInteractionSla('Dashboard Load', 1200, async () => {\n  await navigationPage.navigateTo('/dashboard');\n});`
       },
       prod: {
-        title: 'PROD Environment: Locked to @prod-safe Synthetic Monitoring',
-        color: 'var(--amber)',
+        title: 'PROD Environment: Restricted to @prod-safe Synthetic Checks',
         desc: 'When ENV=prod is set, playwright.config.ts enforces a global grep filter for /@prod-safe/ and sets retries to 0. Only explicitly audited, zero-side-effect health checks can execute against production.',
         cmd: '$ ENV=prod npm run test:prod',
         code: `// playwright.config.ts global production lock:\nconst isProd = context.environment === 'prod';\nexport default defineConfig({\n  grep: isProd ? /@prod-safe/ : undefined,\n  retries: isProd ? 0 : process.env.CI ? 2 : 1,\n});`
@@ -994,9 +1081,7 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
       document.querySelectorAll('.interactive-tabs .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const d = envData[envKey];
-      const titleEl = document.getElementById('envTitle');
-      titleEl.textContent = d.title;
-      titleEl.style.color = d.color;
+      document.getElementById('envTitle').textContent = d.title;
       document.getElementById('envDesc').textContent = d.desc;
       document.getElementById('envCommand').textContent = d.cmd;
       document.getElementById('envCode').textContent = d.code;
@@ -1013,7 +1098,6 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
       document.getElementById('lblHours').textContent = `${hrs} hrs / release`;
       document.getElementById('lblRate').textContent = `$${rate} / hr`;
 
-      // Conservative 80% reduction in manual regression & locator maintenance overhead
       const annualManualHours = rel * 12 * hrs * Math.min(eng, 2.5) * 0.5;
       const savedHours = Math.round(annualManualHours * 0.8);
       const savedUsd = savedHours * rate;
