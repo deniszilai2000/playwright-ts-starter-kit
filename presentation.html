@@ -2,8 +2,11 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>ArgonQA™ — Deterministic Playwright + Gemini 4 Argon Architecture Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-void: #05080f;
@@ -245,32 +248,35 @@
     /* Bento Grids */
     .bento-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 20px;
     }
 
     .bento-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
       gap: 24px;
     }
 
     .bento-4 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
       gap: 16px;
     }
 
     .card {
-      background: var(--bg-card);
+      background: linear-gradient(180deg, rgba(23, 35, 61, 0.72) 0%, rgba(17, 26, 46, 0.92) 100%);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 24px;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      min-width: 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 28px rgba(0, 0, 0, 0.28);
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
     }
 
     .card:hover {
-      border-color: rgba(6, 182, 212, 0.4);
+      border-color: rgba(16, 185, 129, 0.45);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 36px rgba(6, 182, 212, 0.12);
       transform: translateY(-2px);
     }
 
@@ -433,6 +439,89 @@
     .dock-btn:hover {
       border-color: var(--emerald);
       color: var(--emerald);
+    }
+
+    /* Responsive Mobile & Tablet Optimization */
+    @media (max-width: 1080px) {
+      .command-bar {
+        flex-wrap: wrap;
+        padding: 12px 18px;
+        gap: 10px;
+      }
+      .module-pills {
+        order: 3;
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .module-pills::-webkit-scrollbar {
+        display: none;
+      }
+      .module-pill {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .command-bar {
+        padding: 10px 14px;
+      }
+      .brand-title span {
+        display: none;
+      }
+      .btn-action {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      .deck-container {
+        padding: 18px 12px 92px;
+      }
+      .deck-section {
+        padding: 22px 16px;
+        border-radius: 16px;
+        margin-bottom: 28px;
+      }
+      h1 {
+        font-size: clamp(24px, 7vw, 32px);
+        line-height: 1.18;
+      }
+      h2 {
+        font-size: clamp(20px, 5.8vw, 26px);
+      }
+      .lead {
+        font-size: 14.5px;
+        margin-bottom: 20px;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      .metric-stat {
+        font-size: 24px;
+      }
+      pre {
+        padding: 14px;
+        font-size: 11.5px;
+      }
+      .score-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .interactive-tabs .tab-btn {
+        flex: 1 1 100%;
+        text-align: left;
+      }
+      .keynote-dock {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        bottom: 14px;
+        padding: 8px 16px;
+      }
     }
   </style>
 </head>
@@ -826,6 +915,9 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
       currentModule = (index + sections.length) % sections.length;
       sections.forEach((sec, i) => sec.classList.toggle('active-module', i === currentModule));
       pills.forEach((pill, i) => pill.classList.toggle('active', i === currentModule));
+      if (pills[currentModule]) {
+        pills[currentModule].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
       counter.textContent = `0${currentModule + 1} / 0${sections.length}`;
       if (!document.body.classList.contains('keynote-mode')) {
         sections[currentModule].scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -833,6 +925,28 @@ ArgonQA #8851044 • [dev]   • @regression • 4x Shards &rarr; 142/142 Passed
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
+
+    // Touch swipe navigation on mobile devices in Keynote mode
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener('touchstart', (e) => {
+      if (!e.changedTouches || !e.changedTouches[0]) return;
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (!document.body.classList.contains('keynote-mode')) return;
+      if (!e.changedTouches || !e.changedTouches[0]) return;
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      const dy = e.changedTouches[0].screenY - touchStartY;
+      // Only trigger module swipe if horizontal gesture is dominant and not inside a range slider or code block
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+      if (tag === 'input' || tag === 'pre' || tag === 'code') return;
+      if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+        stepModule(dx < 0 ? 1 : -1);
+      }
+    }, { passive: true });
 
     function stepModule(delta) {
       goToModule(currentModule + delta);
