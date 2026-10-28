@@ -219,8 +219,6 @@
     /* Keynote Single-Slide Mode vs Scroll Mode */
     body.keynote-mode .deck-section {
       display: none;
-      min-height: calc(100vh - 150px);
-      align-content: center;
     }
     body.keynote-mode .deck-section.active-module {
       display: block;
@@ -285,31 +283,44 @@
       line-height: 1.65;
     }
 
-    /* Editorial Grids */
+    /* Editorial Grids — minmax(0, 1fr) prevents code/text children from overflowing boxes */
     .bento-3 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-      gap: 20px;
+      gap: 18px;
+      align-items: start;
     }
 
     .bento-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+      gap: 20px;
+      align-items: start;
     }
 
     .bento-4 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
       gap: 16px;
+      align-items: stretch;
+    }
+
+    .bento-2 > *,
+    .bento-3 > *,
+    .bento-4 > * {
+      min-width: 0;
+      max-width: 100%;
     }
 
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 24px;
+      padding: 20px 22px;
       min-width: 0;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-break: break-word;
       box-shadow: var(--shadow-card);
     }
 
@@ -363,12 +374,17 @@
       background: #0f172a;
       border: 1px solid #1e293b;
       border-radius: 8px;
-      padding: 18px 20px;
+      padding: 14px 16px;
       font-family: var(--font-mono);
-      font-size: 12.5px;
-      line-height: 1.65;
+      font-size: 12px;
+      line-height: 1.55;
       color: #f1f5f9;
-      overflow-x: auto;
+      max-width: 100%;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      overflow-x: hidden;
+      margin-top: 8px;
     }
 
     code {
@@ -376,9 +392,11 @@
       font-size: 12px;
       color: var(--inline-code-text);
       background: var(--inline-code-bg);
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 4px;
       border: 1px solid var(--border);
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     pre code {
@@ -386,6 +404,9 @@
       padding: 0;
       color: inherit;
       border: none;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     .tok-kw { color: #93c5fd; }

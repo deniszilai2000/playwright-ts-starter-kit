@@ -95,19 +95,19 @@
       gap: 10px;
       font-weight: 700;
       font-size: 14px;
-      letter-spacing: 0.02em;
+      letter-spacing: -0.01em;
     }
-    .pulse-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 12px var(--green);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.25); opacity: 0.65; }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--ink);
+      color: var(--surface);
+      display: grid;
+      place-items: center;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 600;
+      font-size: 12px;
     }
     .nav-links {
       display: flex;
@@ -269,46 +269,50 @@
     /* Interactive System Map */
     .arch-layout {
       display: grid;
-      grid-template-columns: 1.25fr 1fr;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
       gap: 20px;
-      align-items: stretch;
+      align-items: start;
+    }
+    .arch-layout > * {
+      min-width: 0;
+      max-width: 100%;
     }
     @media (max-width: 900px) {
-      .arch-layout { grid-template-columns: 1fr; }
+      .arch-layout { grid-template-columns: minmax(0, 1fr); }
     }
     .node-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
     .arch-node {
       background: var(--surface-elevated);
-      border: 1px solid var(--border-bright);
-      border-radius: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 16px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       text-align: left;
       color: var(--ink);
       position: relative;
+      min-width: 0;
     }
     .arch-node:hover, .arch-node.active {
       border-color: var(--accent);
       background: var(--surface-hover);
-      box-shadow: 0 0 20px var(--accent-glow);
-      transform: translateY(-2px);
     }
     .arch-node-tag {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 11px;
       color: var(--accent);
       text-transform: uppercase;
       margin-bottom: 4px;
       display: block;
+      font-weight: 600;
     }
     .arch-node h4 {
       margin: 0 0 6px;
-      font-size: 15px;
+      font-size: 14.5px;
     }
     .arch-node p {
       margin: 0;
@@ -316,25 +320,30 @@
       color: var(--muted);
     }
     .inspector-panel {
-      background: var(--code-bg);
-      border: 1px solid var(--border-bright);
-      border-radius: 12px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 20px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
+      gap: 10px;
+      min-width: 0;
+      max-width: 100%;
     }
     .inspector-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
       border-bottom: 1px solid var(--border);
       padding-bottom: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .inspector-title {
-      font-weight: 700;
-      color: var(--accent);
+      font-weight: 600;
+      color: var(--ink);
       font-size: 15px;
     }
 
@@ -343,37 +352,43 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
     }
     .tab-btn {
       background: var(--surface-elevated);
       color: var(--muted);
-      border: 1px solid var(--border-bright);
-      padding: 10px 16px;
-      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 6px;
       cursor: pointer;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.18s ease;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px;
+      font-weight: 500;
+      transition: all 0.15s ease;
     }
     .tab-btn:hover {
       color: var(--ink);
-      border-color: var(--accent);
+      border-color: var(--border-bright);
     }
     .tab-btn.active {
-      background: var(--accent-glow);
-      color: var(--accent);
+      background: var(--accent);
+      color: #ffffff;
       border-color: var(--accent);
-      box-shadow: 0 0 16px var(--accent-glow);
+      font-weight: 600;
     }
     .skill-panel {
       display: none;
       background: var(--surface-elevated);
-      border: 1px solid var(--border-bright);
-      border-radius: 12px;
-      padding: 22px;
-      animation: fadeIn 0.22s ease;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      min-width: 0;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      animation: fadeIn 0.18s ease;
     }
     .skill-panel.active { display: block; }
     @keyframes fadeIn {
@@ -382,15 +397,16 @@
     }
     .flow-steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
       gap: 12px;
-      margin-top: 16px;
+      margin-top: 14px;
     }
     .flow-step {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 14px;
+      min-width: 0;
     }
     .flow-step-num {
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -474,29 +490,41 @@
     /* Interactive Repository File Explorer */
     .repo-explorer {
       display: grid;
-      grid-template-columns: 1fr 1.3fr;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
       gap: 20px;
+      align-items: start;
+    }
+    .repo-explorer > * {
+      min-width: 0;
+      max-width: 100%;
     }
     @media (max-width: 900px) {
-      .repo-explorer { grid-template-columns: 1fr; }
+      .repo-explorer { grid-template-columns: minmax(0, 1fr); }
     }
     .file-tree {
-      background: var(--code-bg);
-      border: 1px solid var(--border-bright);
-      border-radius: 12px;
-      padding: 16px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 13px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px;
+      min-width: 0;
     }
     .tree-item {
-      padding: 7px 10px;
+      padding: 8px 10px;
       border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
       color: var(--muted);
       transition: all 0.15s ease;
+    }
+    .tree-item span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .tree-item:hover, .tree-item.active {
       background: var(--surface-hover);
@@ -506,41 +534,65 @@
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 4px;
-      background: var(--surface-elevated);
+      background: var(--surface);
+      border: 1px solid var(--border);
       color: var(--muted);
+      flex-shrink: 0;
     }
 
     /* Badges & Code Blocks */
     .badge {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 11px;
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-weight: 600;
       text-transform: uppercase;
+      flex-shrink: 0;
     }
-    .badge-green { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-green { background: var(--green-soft); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.3); }
     .badge-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
     .badge-red { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
-    .badge-blue { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-blue { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
 
     .code-wrapper {
       position: relative;
-      margin: 12px 0 0;
+      margin: 6px 0 0;
+      min-width: 0;
+      max-width: 100%;
     }
     pre {
       background: var(--code-bg);
-      color: #e2e8f0;
-      padding: 16px 18px;
-      border-radius: 10px;
-      border: 1px solid var(--border-bright);
-      overflow-x: auto;
-      font-size: 12.8px;
+      color: #f1f5f9;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      max-width: 100%;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      overflow-x: hidden;
+      font-size: 12px;
       line-height: 1.55;
       margin: 0;
     }
     code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      background: var(--surface);
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .copy-btn {
       position: absolute;
@@ -565,6 +617,12 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
       gap: 18px;
+      align-items: start;
+    }
+    .grid-2 > *,
+    .sim-output-grid > * {
+      min-width: 0;
+      max-width: 100%;
     }
     .subcard {
       border: 1px solid var(--border);
@@ -623,17 +681,18 @@
   <nav class="topbar">
     <div class="topbar-inner">
       <div class="brand">
-        <span class="pulse-dot"></span>
-        <span>ENTERPRISE PLAYWRIGHT E2E • GEMINI 4 ARGON</span>
+        <span class="brand-mark">AQ</span>
+        <span>ArgonQA • Technical Architecture Reference</span>
       </div>
       <div class="nav-links">
-        <a href="#system-map">01 System Map</a>
-        <a href="#skills">02 Agent Skills</a>
-        <a href="#safety-sim">03 Safety Simulator</a>
-        <a href="#repo-explorer">04 Repo Explorer</a>
-        <a href="#toolkit">05 BasePage Toolkit</a>
-        <a href="#commands">06 CLI Cheat Sheet</a>
-        <button class="theme-btn" id="themeToggle" type="button">☀️ Light Mode</button>
+        <a href="#system-map">1. System Map</a>
+        <a href="#skills">2. Workflows</a>
+        <a href="#safety-sim">3. Environment Guard</a>
+        <a href="#repo-explorer">4. Repository</a>
+        <a href="#toolkit">5. BasePage Toolkit</a>
+        <a href="#commands">6. CLI Reference</a>
+        <button class="theme-btn" id="themeToggle" type="button">Light Theme</button>
+        <a href="./presentation.html" class="theme-btn" style="background: var(--accent); color: #fff; border-color: var(--accent); text-decoration: none;">Executive Briefing &rarr;</a>
       </div>
     </div>
   </nav>
@@ -641,23 +700,23 @@
   <div class="container">
     <!-- Hero Banner -->
     <header class="hero">
-      <div class="eyebrow">⚡ ZERO RUNTIME AI FLAKINESS • 100% DETERMINISTIC TYPESCRIPT</div>
-      <h1>How the Enterprise E2E Suite is Built &amp; Connected</h1>
+      <div class="eyebrow">Technical Documentation — Deterministic Playwright + TypeScript</div>
+      <h1>System Architecture &amp; Implementation Guide</h1>
       <p class="lead">
         A production-grade Playwright + TypeScript automation architecture for multi-tenant B2B SaaS platforms.
-        Executes deterministic TypeScript in CI while pairing with <strong>Google Antigravity (Gemini 4 Argon)</strong>
-        for interactive test creation, DOM locator healing, and 1:1 Test Management traceability.
+        Executes deterministic TypeScript in CI while pairing with structured IDE workflows
+        for rapid test authoring, DOM locator diagnostics, and 1:1 Test Management traceability.
       </p>
 
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-num">4</div>
-          <div class="stat-label">Gemini 4 Argon Skills</div>
-          <div class="stat-sub">Interactive agent workflows</div>
+          <div class="stat-label">IDE Workflows</div>
+          <div class="stat-sub">Standardized engineering skills</div>
         </div>
         <div class="stat-card">
           <div class="stat-num">3-Tier</div>
-          <div class="stat-label">Safety Architecture</div>
+          <div class="stat-label">Environment Isolation</div>
           <div class="stat-sub">dev (write) • stage (RO) • prod (locked)</div>
         </div>
         <div class="stat-card">
@@ -685,39 +744,39 @@
           <span class="sec-num">01</span>
           <h2>Interactive System Map</h2>
         </div>
-        <span class="sec-hint">👉 Click any node to inspect its implementation</span>
+        <span class="sec-hint">Select any component to inspect its implementation</span>
       </div>
 
       <div class="arch-layout">
         <div class="node-grid">
           <button class="arch-node active" type="button" data-node="runner">
             <span class="arch-node-tag">Core Execution</span>
-            <h4>🎭 Playwright Runner</h4>
+            <h4>Playwright Runner &amp; Chain</h4>
             <p>Isolated browser contexts, pinned timezone, setup chain (auth &rarr; seed &rarr; specs).</p>
           </button>
           <button class="arch-node" type="button" data-node="gemini">
-            <span class="arch-node-tag">Interactive AI Partner</span>
-            <h4>🧠 Gemini 4 Argon (Antigravity)</h4>
-            <p>Reads tickets &amp; PR diffs, probes live DOM, heals locators, enforces GEMINI.md rules.</p>
+            <span class="arch-node-tag">Assisted Engineering</span>
+            <h4>IDE Agentic Workflows</h4>
+            <p>Reads tickets &amp; PR diffs, probes live DOM, heals locators, enforces house rules.</p>
           </button>
           <button class="arch-node" type="button" data-node="auth">
             <span class="arch-node-tag">Session &amp; Security</span>
-            <h4>🔐 SSO / IAM + Token Interceptor</h4>
+            <h4>SSO / IAM + Token Interceptor</h4>
             <p>Signs in once to user.json; borrows in-memory Bearer token for GraphQL/REST calls.</p>
           </button>
           <button class="arch-node" type="button" data-node="supply">
             <span class="arch-node-tag">Resilient Test Data</span>
-            <h4>♻️ EntitySupplyManager</h4>
+            <h4>EntitySupplyManager</h4>
             <p>Survives dev DB wipes via findOrProvision() + automatic LIFO teardown.</p>
           </button>
           <button class="arch-node" type="button" data-node="ci">
             <span class="arch-node-tag">Sharded Pipeline</span>
-            <h4>🚀 GitHub Actions Shards (1/2/4/8)</h4>
+            <h4>GitHub Actions Shards (1/2/4/8)</h4>
             <p>Manual workflow dispatch dropdowns for tenant, env, tags, browsers &amp; preview URLs.</p>
           </button>
           <button class="arch-node" type="button" data-node="tms">
             <span class="arch-node-tag">Traceability &amp; Quality Gates</span>
-            <h4>📊 TMS Linker + ESLint Gates</h4>
+            <h4>TMS Linker + ESLint Gates</h4>
             <p>1:1 tmsCase() annotations, JUnit XML export, and zero-waitForTimeout lint lock.</p>
           </button>
         </div>
@@ -725,10 +784,10 @@
         <div class="inspector-panel">
           <div>
             <div class="inspector-header">
-              <span class="inspector-title" id="inspectorTitle">🎭 Playwright Runner &amp; Setup Chain</span>
+              <span class="inspector-title" id="inspectorTitle">Playwright Runner &amp; Setup Chain</span>
               <span class="badge badge-blue" id="inspectorBadge">playwright.config.ts</span>
             </div>
-            <p id="inspectorDesc" style="font-size: 13.5px; color: var(--muted); margin: 0 0 12px;">
+            <p id="inspectorDesc" style="font-size: 13.5px; color: var(--muted); margin: 0 0 8px;">
               Every run executes a deterministic 3-stage project dependency chain:
               <code>auth-setup</code> signs in once with retry resilience, <code>seed-data</code> verifies baseline dev records without blocking, and browser workers run in fresh contexts.
             </p>
@@ -955,39 +1014,39 @@ projects: [
       <div class="repo-explorer">
         <div class="file-tree">
           <div class="tree-item active" data-file="config">
-            <span>📄 playwright.config.ts</span>
+            <span>playwright.config.ts</span>
             <span class="tree-badge">Core Runner</span>
           </div>
           <div class="tree-item" data-file="gemini">
-            <span>🤖 GEMINI.md</span>
-            <span class="tree-badge">Agent Rules</span>
+            <span>GEMINI.md</span>
+            <span class="tree-badge">House Rules</span>
           </div>
           <div class="tree-item" data-file="eslint">
-            <span>🛡️ eslint.config.mjs</span>
+            <span>eslint.config.mjs</span>
             <span class="tree-badge">Lint Gate</span>
           </div>
           <div class="tree-item" data-file="basepage">
-            <span>🧰 src/pages/base.page.ts</span>
+            <span>src/pages/base.page.ts</span>
             <span class="tree-badge">UI Toolkit</span>
           </div>
           <div class="tree-item" data-file="envhelper">
-            <span>🌍 src/helpers/environment.helper.ts</span>
+            <span>src/helpers/environment.helper.ts</span>
             <span class="tree-badge">Safety Gate</span>
           </div>
           <div class="tree-item" data-file="datasupply">
-            <span>♻️ src/helpers/data-supply.helper.ts</span>
+            <span>src/helpers/data-supply.helper.ts</span>
             <span class="tree-badge">Self-Cleaning</span>
           </div>
           <div class="tree-item" data-file="authtoken">
-            <span>🔑 src/helpers/auth-token.helper.ts</span>
+            <span>src/helpers/auth-token.helper.ts</span>
             <span class="tree-badge">Token Borrow</span>
           </div>
           <div class="tree-item" data-file="protected">
-            <span>🔒 src/constants/protected-data.constants.ts</span>
+            <span>src/constants/protected-data.constants.ts</span>
             <span class="tree-badge">Golden Data</span>
           </div>
           <div class="tree-item" data-file="spec">
-            <span>🧪 tests/e2e/smoke/navigation.spec.ts</span>
+            <span>tests/e2e/smoke/navigation.spec.ts</span>
             <span class="tree-badge">1:1 Spec</span>
           </div>
         </div>
@@ -998,7 +1057,7 @@ projects: [
               <span class="inspector-title" id="fileTitle">playwright.config.ts</span>
               <span class="badge badge-blue" id="fileRole">URL Resolution &amp; Project Chain</span>
             </div>
-            <p id="fileDesc" style="font-size: 13.5px; color: var(--muted); margin: 0 0 12px;">
+            <p id="fileDesc" style="font-size: 13.5px; color: var(--muted); margin: 0 0 8px;">
               Pins the execution timezone, enforces <code>grep: /@prod-safe/</code> automatically when <code>ENV=prod</code>, and chains <code>auth-setup &rarr; seed-data &rarr; browsers</code>.
             </p>
           </div>
@@ -1115,13 +1174,13 @@ projects: [
       const root = document.documentElement;
       const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
-      themeToggle.textContent = next === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+      themeToggle.textContent = next === 'dark' ? 'Light Theme' : 'Dark Theme';
     });
 
     // 2. Interactive System Map Data
     const nodeData = {
       runner: {
-        title: '🎭 Playwright Runner & Setup Chain',
+        title: 'Playwright Runner & Setup Chain',
         badge: 'playwright.config.ts',
         desc: 'Executes a deterministic 3-stage project dependency chain: auth-setup signs in once with retry resilience, seed-data verifies baseline dev records without blocking, and browser workers run in isolated contexts.',
         code: `// Project dependency chain in playwright.config.ts
@@ -1141,20 +1200,20 @@ projects: [
 ]`
       },
       gemini: {
-        title: '🧠 Gemini 4 Argon (Antigravity Partner)',
+        title: 'IDE Agentic Workflows',
         badge: 'GEMINI.md + .agent/skills/',
-        desc: 'Nothing in the runtime test calls an LLM. Gemini 4 Argon operates alongside the engineer to read tickets & PR diffs, inspect live DOM trees, create 1:1 TMS cases, and heal broken selectors.',
+        desc: 'Nothing in the runtime test calls an LLM. Structured IDE workflows operate alongside the engineer to read tickets & PR diffs, inspect live DOM trees, create 1:1 TMS cases, and heal broken selectors.',
         code: `// House conventions enforced by GEMINI.md & eslint.config.mjs
 test('1 — application shell loads and renders expected title @prod-safe', async ({
   navigationPage,
 }) => {
   await tmsCase(100001);
-  await navigationPage.navigateTo('https://example.com');
-  await navigationPage.expectPageTitleToMatch(/Example Domain/i);
+  await navigationPage.navigateTo('https://www.saucedemo.com');
+  await navigationPage.expectPageTitleToMatch(/Swag Labs/i);
 });`
       },
       auth: {
-        title: '🔐 SSO / IAM + In-Memory Token Interceptor',
+        title: 'SSO / IAM + In-Memory Token Interceptor',
         badge: 'src/helpers/auth-token.helper.ts',
         desc: 'Modern SPAs keep Bearer tokens in memory only. InMemoryTokenClient intercepts the next outgoing API/GraphQL request from the browser so tests can perform direct backend checks.',
         code: `const tokenClient = new InMemoryTokenClient(page);
@@ -1165,7 +1224,7 @@ const result = await tokenClient.queryGraphQL(
 );`
       },
       supply: {
-        title: '♻️ EntitySupplyManager (On-Demand Data & Teardown)',
+        title: 'EntitySupplyManager (On-Demand Data & Teardown)',
         badge: 'src/helpers/data-supply.helper.ts',
         desc: 'Finds an existing record in the required state or provisions a fresh one on dev if the DB was refreshed. Automatically tears down created entities in LIFO order while protecting golden IDs.',
         code: `const order = await dataSupply.findOrProvision({
@@ -1176,7 +1235,7 @@ const result = await tokenClient.queryGraphQL(
 });`
       },
       ci: {
-        title: '🚀 Sharded GitHub Actions Pipeline',
+        title: 'Sharded GitHub Actions Pipeline',
         badge: 'ci/github-actions-playwright.yml',
         desc: 'Manual workflow_dispatch pipeline with dropdown inputs for tenant, environment, parallel shards (1/2/4/8), tag filters (@smoke/@sanity/@regression/@prod-safe), and preview URLs.',
         code: `npx playwright test \\
@@ -1185,9 +1244,9 @@ const result = await tokenClient.queryGraphQL(
   --shard=\${{ matrix.shard }}/\${{ inputs.shards }}`
       },
       tms: {
-        title: '📊 TMS Traceability & ESLint Quality Gates',
+        title: 'TMS Traceability & ESLint Quality Gates',
         badge: 'eslint.config.mjs + tms.helper.ts',
-        desc: 'Mechanically blocks page.waitForTimeout(), test.only(), and raw locators in spec files. Links every test step 1:1 to Testmo / TestRail / Xray case IDs.',
+        desc: 'Mechanically blocks page.waitForTimeout(), test.only(), and raw locators in spec files. Links every test step 1:1 to TestRail / Xray / Qase case IDs.',
         code: `rules: {
   'playwright/no-wait-for-timeout': 'error',
   'playwright/no-focused-test': 'error',
